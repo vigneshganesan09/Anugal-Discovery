@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anugal — IGA Discovery Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1b3e;--navy-mid:#162550;--navy-light:#1e3166;
+  --blue:#2563eb;--blue-l:#3b82f6;--blue-xl:#dbeafe;
+  --teal:#0891b2;--teal-l:#22d3ee;
+  --surface:#f5f7ff;--surface2:#eef2ff;
+  --white:#ffffff;--border:#e2e8f0;--border-mid:#cbd5e1;
+  --text:#0f172a;--text-mid:#475569;--text-soft:#94a3b8;
+  --danger:#dc2626;--danger-bg:#fef2f2;--danger-b:rgba(220,38,38,.2);
+  --warn:#d97706;--warn-bg:#fffbeb;--warn-b:rgba(217,119,6,.2);
+  --ok:#059669;--ok-bg:#f0fdf4;--ok-b:rgba(5,150,105,.25);
+  --info-bg:#eff6ff;--info-b:rgba(37,99,235,.18);
+  --r:10px;--r-sm:6px;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 16px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.06);
+  --font:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--surface);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:240px;min-width:240px;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-logo{font-size:20px;font-weight:600;color:#fff;letter-spacing:-.4px}
+.brand-logo span{color:#22d3ee}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:3px}
+.nav-section{padding:14px 12px;flex:1}
+.nav-label{font-size:10px;font-weight:500;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;margin-bottom:5px;margin-top:10px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;transition:all .15s;color:rgba(255,255,255,.5);font-size:13px;margin-bottom:2px;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.nav-item.active{background:rgba(37,99,235,.3);color:#fff;font-weight:500}
+.nav-item.done{color:rgba(16,185,129,.8)}
+.nav-item.done .nav-num{background:rgba(16,185,129,.18);color:#34d399;border-color:transparent}
+.nav-num{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;transition:all .15s}
+.nav-item.active .nav-num{background:#2563eb;border-color:#2563eb;color:#fff}
+.nav-text{flex:1;line-height:1.3}
+.sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,.08)}
+.api-btn{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;padding:7px 8px;border-radius:6px;transition:all .15s;width:100%;background:none;border:none}
+.api-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
+.api-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;flex-shrink:0}
+.api-dot.ok{background:#10b981}
+.main{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-l{display:flex;align-items:center;gap:12px}
+.breadcrumb{font-size:13px;color:var(--text-soft)}
+.breadcrumb strong{color:var(--text)}
+.sess-badge{font-size:12px;background:var(--info-bg);color:var(--blue);padding:4px 10px;border-radius:20px;font-weight:500;border:1px solid var(--info-b)}
+.content{padding:28px 32px;max-width:860px;width:100%}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card-icon{width:22px;height:22px;background:var(--info-bg);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.ph{margin-bottom:20px}
+.ph-title{font-size:22px;font-weight:600;color:var(--navy);letter-spacing:-.4px}
+.ph-desc{font-size:13px;color:var(--text-mid);margin-top:4px;line-height:1.5}
+.fg{margin-bottom:14px}
+label.fl{display:block;font-size:12px;font-weight:500;color:var(--text-mid);margin-bottom:5px}
+input.fi,select.fs,textarea.fta{width:100%;padding:8px 11px;font-family:var(--font);font-size:13px;color:var(--text);background:#fff;border:1px solid var(--border-mid);border-radius:6px;outline:none;transition:border-color .15s,box-shadow .15s}
+input.fi:focus,select.fs:focus,textarea.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.fta{min-height:80px;resize:vertical;line-height:1.55}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border-mid);background:#fff;font-family:var(--font);font-size:13px;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover:not(:disabled){background:var(--surface2)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover:not(:disabled){background:var(--blue-l);border-color:var(--blue-l)}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-navy:hover:not(:disabled){background:var(--navy-light)}
+.btn-teal{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-teal:hover:not(:disabled){background:#0e7490;border-color:#0e7490}
+.btn-danger{color:var(--danger);border-color:#fca5a5}
+.btn-danger:hover:not(:disabled){background:var(--danger-bg)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-soft)}
+.btn-ghost:hover:not(:disabled){background:var(--surface2);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-lg{padding:11px 20px;font-size:14px;font-weight:600}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.b-blue{background:var(--info-bg);color:var(--blue)}
+.b-green{background:var(--ok-bg);color:var(--ok)}
+.b-red{background:var(--danger-bg);color:var(--danger)}
+.b-orange{background:var(--warn-bg);color:var(--warn)}
+.b-navy{background:rgba(13,27,62,.08);color:var(--navy)}
+.b-gray{background:var(--surface2);color:var(--text-soft)}
+.tool-grid{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border-mid);font-size:12px;cursor:pointer;transition:all .15s;background:#fff;color:var(--text-mid);user-select:none}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.sel{background:var(--info-bg);color:var(--blue);border-color:rgba(37,99,235,.3);font-weight:500}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:9px 12px;color:var(--text-soft);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--surface)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface)}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.app-card{padding:14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;background:#fff}
+.app-card:hover{border-color:var(--border-mid);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.app-card.crit{border-color:var(--blue);background:var(--info-bg)}
+.qcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.qcard.ai-q{border-left:3px solid var(--blue)}
+.qcat{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin-bottom:4px;font-weight:500}
+.qtxt{font-size:13.5px;font-weight:500;color:var(--navy);margin-bottom:10px;line-height:1.5}
+.gap-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.gap-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.gap-area{font-size:14px;font-weight:600;color:var(--navy)}
+.gap-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:9px}
+.sub-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.sub-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-soft);margin-bottom:4px;font-weight:500}
+.sub-val{font-size:12.5px;line-height:1.5;color:var(--text-mid)}
+.anugal-box{background:linear-gradient(135deg,var(--info-bg),#f0f9ff);border:1px solid rgba(37,99,235,.15);border-radius:6px;padding:10px 12px}
+.anugal-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:4px;font-weight:600}
+.anugal-val{font-size:12.5px;color:var(--text);line-height:1.5}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.metric-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.mv{font-size:28px;font-weight:600;color:var(--navy);line-height:1}
+.mk{font-size:12px;color:var(--text-soft);margin-top:4px}
+.ms{font-size:11px;color:var(--text-soft);margin-top:2px}
+.alert{border-radius:6px;padding:11px 14px;font-size:13px;margin-bottom:14px;border:1px solid;line-height:1.5}
+.alert-info{background:var(--info-bg);color:var(--blue);border-color:rgba(37,99,235,.18)}
+.alert-warn{background:var(--warn-bg);color:var(--warn);border-color:rgba(217,119,6,.2)}
+.alert-danger{background:var(--danger-bg);color:var(--danger);border-color:rgba(220,38,38,.2)}
+.alert-success{background:var(--ok-bg);color:var(--ok);border-color:rgba(5,150,105,.25)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border-mid);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 1px 4px rgba(37,99,235,.4)}
+.mat-track{display:flex;justify-content:space-between;font-size:10px;color:var(--text-soft);margin-top:6px}
+.logo-box{width:120px;height:80px;border:1.5px dashed var(--border-mid);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color .15s}
+.logo-box:hover{border-color:var(--blue)}
+.logo-box img{max-width:100%;max-height:100%;object-fit:contain}
+.logo-ph{font-size:11px;color:var(--text-soft);text-align:center;line-height:1.5;padding:10px}
+.checklist{list-style:none}
+.checklist li{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-mid)}
+.checklist li::before{content:"✓";color:var(--ok);font-weight:600;flex-shrink:0}
+.checklist li:last-child{border-bottom:none}
+.pt-list{list-style:none}
+.pt-list li{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-mid)}
+.pt-list li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--danger);flex-shrink:0;margin-top:5px}
+.pt-list li:last-child{border-bottom:none}
+.nav-footer{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;background:#fff;border-top:1px solid var(--border);position:sticky;bottom:0;z-index:40}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.report-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.report-card.teal{border-top:3px solid #0891b2}
+.report-card.navy{border-top:3px solid var(--navy)}
+.report-card-icon{font-size:28px;margin-bottom:12px}
+.report-card-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:5px}
+.report-card-for{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.report-card-desc{font-size:12.5px;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
+.report-tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;margin:2px}
+.db-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+.db-title{font-size:24px;font-weight:600;color:var(--navy);letter-spacing:-.4px}
+.db-sub{font-size:13px;color:var(--text-soft);margin-top:4px}
+.customers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.customer-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:all .2s;position:relative}
+.customer-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);border-color:rgba(37,99,235,.3);transform:translateY(-1px)}
+.customer-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.customer-name{font-size:15px;font-weight:600;color:var(--navy);line-height:1.3}
+.customer-ind{font-size:12px;color:var(--text-soft);margin-top:3px}
+.customer-meta{display:flex;gap:12px;font-size:11px;color:var(--text-soft);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.empty-state{text-align:center;padding:60px 32px;color:var(--text-soft)}
+.empty-icon{font-size:48px;margin-bottom:14px}
+.empty-title{font-size:17px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.empty-desc{font-size:13px;color:var(--text-mid);margin-bottom:20px}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:#fff;border-radius:10px;padding:28px;width:480px;max-width:90vw;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.confirm-modal{background:#fff;border-radius:10px;padding:28px;width:380px;max-width:90vw;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.modal-title{font-size:17px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+#toast{position:fixed;bottom:24px;right:24px;background:#1e1e2e;color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;max-width:380px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.1);border-left:3px solid var(--danger);display:none}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin:20px 0 10px}
+@media(max-width:768px){.sidebar{width:200px;min-width:200px}.main{margin-left:200px}.content{padding:18px}.fr2,.fr3{grid-template-columns:1fr}.metrics-row{grid-template-columns:1fr 1fr}.gap-pair,.report-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo"><span>Anugal</span> IGA</div>
+    <div class="brand-sub">Discovery Platform</div>
+  </div>
+  <nav class="nav-section" id="nav-section"></nav>
+  <div class="sidebar-footer">
+    <button class="api-btn" onclick="openApiModal()">
+      <div class="api-dot" id="api-dot"></div>
+      <span id="api-status-txt">API key not set</span>
+    </button>
+  </div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-l"><div class="breadcrumb" id="breadcrumb"></div></div>
+    <div><span id="sess-badge"></span></div>
+  </header>
+  <div class="content" id="content"></div>
+  <footer class="nav-footer" id="nav-footer" style="display:none">
+    <button class="btn" id="btn-back" onclick="prevStep()">&#8592; Back</button>
+    <button class="btn btn-primary btn-lg" id="btn-next" onclick="nextStep()">Continue &#8594;</button>
+  </footer>
+</div>
+<div class="modal-ov" id="api-modal">
+  <div class="modal">
+    <div class="modal-title">Anthropic API key</div>
+    <div style="font-size:13px;color:var(--text-mid);margin-bottom:16px;line-height:1.55">Required for AI features. Stored in your browser localStorage and sent only to Anthropic's API.</div>
+    <div class="fg"><label class="fl">API key</label><input class="fi" type="password" id="api-key-inp" placeholder="sk-ant-api03-..."></div>
+    <div style="font-size:11px;color:var(--text-soft);margin-bottom:4px">Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--blue)">console.anthropic.com</a></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
+      <button class="btn" onclick="closeModal('api-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov" id="del-modal">
+  <div class="confirm-modal">
+    <div class="modal-title">Delete customer?</div>
+    <div style="font-size:13px;color:var(--text-mid);margin:10px 0 0;line-height:1.55">This will permanently delete <strong id="del-name"></strong> and all session data. Cannot be undone.</div>
+    <div class="modal-btns">
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      <button class="btn" onclick="closeModal('del-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+const STEPS=[{l:'Customer setup'},{l:'Identity landscape'},{l:'Applications'},{l:'Critical apps'},{l:'Interview'},{l:'Gap analysis'},{l:'Generate reports'}];
+const SQS=[
+  {id:'sq1',cat:'User lifecycle',q:'Walk us through onboarding a new employee — from HR confirmation to full system access across all applications.'},
+  {id:'sq2',cat:'User lifecycle',q:'What is the average time to fully provision a new joiner with all required access?'},
+  {id:'sq3',cat:'User lifecycle',q:'How is access changed when an employee moves to a different role or department?'},
+  {id:'sq4',cat:'Offboarding',q:'Describe your offboarding process. How long does it take to revoke all access when someone exits?'},
+  {id:'sq5',cat:'Access request',q:'How do users request access to applications? Is there a formal request and approval workflow?'},
+  {id:'sq6',cat:'Access certification',q:'How and when are access reviews or certifications conducted? Who reviews and approves?'},
+  {id:'sq7',cat:'Privileged access',q:'How is privileged or admin access managed and monitored across critical systems?'},
+  {id:'sq8',cat:'Role management',q:'How are roles defined and managed? Is there a formal RBAC or ABAC model in place?'},
+  {id:'sq9',cat:'Compliance',q:'Which regulations apply (SOX, HIPAA, GDPR, ISO 27001)? How do you demonstrate compliance today?'},
+  {id:'sq10',cat:'Segregation of duties',q:'Are SoD policies defined? How are conflicts detected and resolved?'},
+  {id:'sq11',cat:'Automation',q:'What percentage of identity tasks are manual? What are the most time-consuming manual processes?'},
+  {id:'sq12',cat:'Integration',q:'How does your HR system integrate with identity management? Is provisioning automated?'}
+];
+const IAM_TOOLS=['Active Directory / LDAP','Azure AD / Entra ID','Okta','SailPoint IIQ','SAP GRC','Oracle IAM','CyberArk','BeyondTrust','ServiceNow','Saviynt','Manual / Spreadsheets','In-house built'];
+const INDUSTRIES=['Banking & financial services','Healthcare & life sciences','Manufacturing','Retail & e-commerce','Technology & IT services','Government & public sector','Insurance','Telecom','Energy & utilities','Education'];
+const APP_TYPES=['ERP','HRMS','CRM','Finance','Collaboration','Cloud SaaS','Legacy / on-prem','Custom app','Database','Infrastructure'];
+const AUTH_METHODS=['Username / Password','SSO / SAML','MFA','LDAP / AD','API key','Certificate-based','No auth'];
+const SIZES=['< 500','500 - 2,000','2,000 - 10,000','10,000 - 50,000','> 50,000'];
+const MAT=['Initial','Developing','Defined','Managed','Optimized'];
+
+let VIEW='dashboard',CID=null,S=null,PDID=null;
+
+function freshSession(){return{step:0,done:[],c:{name:'',industry:'',size:'',website:'',cName:'',cEmail:'',cRole:'',logo:null,logoName:'',date:new Date().toISOString().split('T')[0],bg:''},l:{tools:[],customTool:'',totalUsers:'',totalIds:'',adDomains:'',cloudStr:'',challenges:'',maturity:2},apps:[],critIds:[],qs:JSON.parse(JSON.stringify(SQS)),ans:{},aiQDone:false,aiQLd:false,gaps:null,gapLd:false,poRptDone:false,poRptLd:false,exRptDone:false,exRptLd:false};}
+
+function loadAll(){try{return JSON.parse(localStorage.getItem('anugal_customers')||'[]');}catch(e){return[];}}
+function saveAll(a){localStorage.setItem('anugal_customers',JSON.stringify(a));}
+function getCust(id){return loadAll().find(c=>c.id===id)||null;}
+function upsertCust(s){const all=loadAll(),idx=all.findIndex(c=>c.id===s.id),rec={...s,updatedAt:new Date().toISOString()};if(idx>-1)all[idx]=rec;else all.push({...rec,createdAt:new Date().toISOString()});saveAll(all);}
+function delCust(id){saveAll(loadAll().filter(c=>c.id!==id));}
+function loadSess(id){const c=getCust(id);if(!c)return;S=c;if(!Array.isArray(S.done))S.done=[];if(!Array.isArray(S.critIds))S.critIds=[];}
+function saveSess(){if(S)upsertCust(S);}
+
+const esc=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
+const $=id=>document.getElementById(id);
+const on=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
+
+function toast(msg,type='error'){const t=$('toast');t.textContent=msg;t.style.borderLeftColor=type==='ok'?'#10b981':'#dc2626';t.style.display='block';setTimeout(()=>t.style.display='none',5000);}
+
+function statusOf(s){if(s.gaps)return{label:'Analysis done',cls:'b-green'};if(s.done&&s.done.length>0)return{label:'In progress',cls:'b-orange'};return{label:'Not started',cls:'b-gray'};}
+
+function getKey(){return localStorage.getItem('anugal_api_key')||'';}
+function updateKeyStatus(){const k=getKey();$('api-dot').classList.toggle('ok',!!k);$('api-status-txt').textContent=k?'API key set':'API key not set';}
+function openApiModal(){$('api-key-inp').value=getKey();$('api-modal').classList.add('open');}
+function closeModal(id){$(id).classList.remove('open');}
+function saveApiKey(){const k=$('api-key-inp').value.trim();k?localStorage.setItem('anugal_api_key',k):localStorage.removeItem('anugal_api_key');closeModal('api-modal');updateKeyStatus();}
+$('api-modal').addEventListener('click',e=>{if(e.target===$('api-modal'))closeModal('api-modal');});
+$('del-modal').addEventListener('click',e=>{if(e.target===$('del-modal'))closeModal('del-modal');});
+
+async function callAPI(prompt){
+  const k=getKey();
+  if(!k)throw new Error('API key not set. Click the key indicator in the sidebar.');
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content[0].text;
+}
+function pj(t){return JSON.parse(t.replace(/```json[\s\S]*?```|```[\s\S]*?```/g,m=>m.replace(/```json|```/g,'')).trim());}
+
+function render(){if(VIEW==='dashboard')renderDash();else renderSess();}
+
+function renderDash(){
+  const all=loadAll();
+  $('nav-section').innerHTML=`<div class="nav-item active"><div class="nav-num" style="font-size:13px">&#9638;</div><div class="nav-text">All customers</div></div>`;
+  $('breadcrumb').innerHTML='<strong>Customer dashboard</strong>';
+  $('sess-badge').innerHTML='';
+  $('nav-footer').style.display='none';
+  $('content').innerHTML=`<div class="db-header"><div><div class="db-title">Customers</div><div class="db-sub">${all.length} engagement${all.length!==1?'s':''} tracked</div></div><button class="btn btn-primary btn-lg" onclick="newCustomer()">+ New customer</button></div>`+(all.length===0?`<div class="empty-state"><div class="empty-icon">&#127970;</div><div class="empty-title">No customers yet</div><div class="empty-desc">Start your first IGA discovery engagement.</div><button class="btn btn-primary btn-lg" onclick="newCustomer()">+ Add first customer</button></div>`:`<div class="customers-grid">${all.map(c=>{const st=statusOf(c),apps=c.apps?c.apps.length:0,gaps=c.gaps?c.gaps.gaps.length:0,upd=c.updatedAt?new Date(c.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';return`<div class="customer-card" onclick="openCustomer('${c.id}')"><div style="position:absolute;top:12px;right:12px" onclick="event.stopPropagation()"><button class="btn btn-ghost btn-sm" onclick="askDel('${c.id}','${esc(c.c&&c.c.name?c.c.name:'this customer')}')" title="Delete">&#128465;</button></div><div class="customer-card-top"><div><div class="customer-name">${esc(c.c&&c.c.name?c.c.name:'Unnamed')}</div><div class="customer-ind">${esc(c.c&&c.c.industry?c.c.industry:'Industry not set')}</div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="customer-meta"><span>&#128230; ${apps} app${apps!==1?'s':''}</span>${gaps?`<span>&#9888;&#65039; ${gaps} gap${gaps!==1?'s':''}</span>`:''}<span style="margin-left:auto">Updated ${upd}</span></div></div>`;}).join('')}</div>`);
+}
+
+function newCustomer(){const id='c'+Date.now();upsertCust({id,...freshSession()});openCustomer(id);}
+function openCustomer(id){VIEW='session';CID=id;loadSess(id);renderSess();}
+function gotoDash(){if(S)saveSess();VIEW='dashboard';CID=null;S=null;render();}
+function askDel(id,name){PDID=id;$('del-name').textContent=name;$('del-modal').classList.add('open');}
+function confirmDelete(){if(PDID){delCust(PDID);if(S&&S.id===PDID){PDID=null;closeModal('del-modal');gotoDash();return;}}PDID=null;closeModal('del-modal');render();}
+
+function renderSess(){
+  if(!S)return gotoDash();
+  renderNav();
+  const fns=[s0,s1,s2,s3,s4,s5,s6];
+  $('content').innerHTML=fns[S.step]();
+  bindEv();
+  $('nav-footer').style.display='flex';
+  $('btn-back').style.visibility=S.step===0?'hidden':'visible';
+  $('btn-next').style.display=S.step===6?'none':'inline-flex';
+  const nm=S.c&&S.c.name?S.c.name:'';
+  $('breadcrumb').innerHTML=`<a href="#" onclick="gotoDash();return false" style="color:var(--text-soft);text-decoration:none">Customers</a> &rsaquo; <strong>${esc(nm)||'New customer'}</strong> &rsaquo; Step ${S.step+1}/7`;
+  $('sess-badge').className='sess-badge';$('sess-badge').textContent=nm||'New session';
+  window.scrollTo(0,0);
+}
+function renderContent(){const fns=[s0,s1,s2,s3,s4,s5,s6];$('content').innerHTML=fns[S.step]();bindEv();}
+function renderNav(){
+  $('nav-section').innerHTML=`<div class="nav-item" onclick="gotoDash()" style="margin-bottom:8px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)"><div class="nav-num" style="font-size:13px">&#8592;</div><div class="nav-text">All customers</div></div>`+STEPS.map((st,i)=>{const cls=i===S.step?'active':S.done.includes(i)?'done':'';const ic=S.done.includes(i)?'&#10003;':i+1;return`<div class="nav-item ${cls}" onclick="goStep(${i})"><div class="nav-num">${ic}</div><div class="nav-text">${st.l}</div></div>`;}).join('');
+}
+function goStep(n){saveSess();S.step=n;renderSess();}
+function nextStep(){if(S.step<6){if(!S.done.includes(S.step))S.done.push(S.step);S.step++;saveSess();renderSess();}}
+function prevStep(){if(S.step>0){S.step--;renderSess();}}
+
+function s0(){const c=S.c;return`<div class="ph"><div class="ph-title">Customer onboarding</div><div class="ph-desc">Set up the customer profile for this IGA discovery engagement.</div></div><div class="card"><div class="card-title"><div class="card-icon">&#127970;</div>Organization details</div><div class="fr2"><div class="fg"><label class="fl">Customer name *</label><input class="fi" id="f-name" value="${esc(c.name)}" placeholder="e.g. Acme Corporation"></div><div class="fg"><label class="fl">Industry</label><select class="fs" id="f-ind"><option value="">Select industry</option>${INDUSTRIES.map(i=>`<option value="${i}"${c.industry===i?' selected':''}>${i}</option>`).join('')}</select></div></div><div class="fr2"><div class="fg"><label class="fl">Organization size</label><select class="fs" id="f-size"><option value="">Select size</option>${SIZES.map(s=>`<option value="${s}"${c.size===s?' selected':''}>${s}</option>`).join('')}</select></div><div class="fg"><label class="fl">Website</label><input class="fi" id="f-web" value="${esc(c.website)}" placeholder="www.example.com"></div></div><div class="fg"><label class="fl">Organization background</label><textarea class="fta" id="f-bg" placeholder="Brief context for this IGA engagement...">${esc(c.bg)}</textarea></div></div><div class="card"><div class="card-title"><div class="card-icon">&#128100;</div>Primary contact</div><div class="fr3"><div class="fg"><label class="fl">Contact name</label><input class="fi" id="f-cn" value="${esc(c.cName)}" placeholder="Full name"></div><div class="fg"><label class="fl">Email</label><input class="fi" id="f-ce" type="email" value="${esc(c.cEmail)}" placeholder="email@company.com"></div><div class="fg"><label class="fl">Role / title</label><input class="fi" id="f-cr" value="${esc(c.cRole)}" placeholder="e.g. CISO, IT Director"></div></div></div><div class="card"><div class="card-title"><div class="card-icon">&#127912;</div>Branding &amp; session</div><div style="display:flex;gap:22px;align-items:flex-start"><div><label class="fl">Customer logo</label><div class="logo-box" onclick="$('logo-inp').click()">${c.logo?`<img src="${c.logo}" alt="logo">`:'<div class="logo-ph">Click to<br>upload logo</div>'}</div><input type="file" id="logo-inp" accept="image/*" style="display:none">${c.logoName?`<div style="font-size:10px;color:var(--text-soft);margin-top:4px">${esc(c.logoName)}</div>`:''}</div><div style="flex:1"><div class="fg"><label class="fl">Session date</label><input class="fi" id="f-date" type="date" value="${c.date}" style="max-width:200px"></div></div></div></div>`;}
+
+function s1(){const l=S.l;return`<div class="ph"><div class="ph-title">Identity landscape</div><div class="ph-desc">Document current IAM tools, environment metrics, and maturity.</div></div><div class="card"><div class="card-title"><div class="card-icon">&#128295;</div>Current IAM tools</div><div class="tool-grid">${IAM_TOOLS.map(t=>`<div class="chip${l.tools.includes(t)?' sel':''}" onclick="toggleTool(this,'${esc(t)}')">${t}</div>`).join('')}</div><div class="fg" style="margin-top:12px"><label class="fl">Other tools</label><input class="fi" id="f-ctool" value="${esc(l.customTool)}" placeholder="Other tools..." style="max-width:400px"></div></div><div class="card"><div class="card-title"><div class="card-icon">&#128202;</div>Identity metrics</div><div class="fr3"><div class="fg"><label class="fl">Total employees / users</label><input class="fi" id="f-tu" value="${esc(l.totalUsers)}" placeholder="e.g. 5,000"></div><div class="fg"><label class="fl">Total digital identities</label><input class="fi" id="f-ti" value="${esc(l.totalIds)}" placeholder="e.g. 12,000"></div><div class="fg"><label class="fl">AD domains / forests</label><input class="fi" id="f-ad" value="${esc(l.adDomains)}" placeholder="e.g. 3"></div></div><div class="fg"><label class="fl">Cloud strategy</label><select class="fs" id="f-cs" style="max-width:340px"><option value="">Select</option>${['Cloud-first (>70% cloud)','Hybrid (mixed cloud & on-prem)','Mostly on-premises (<30% cloud)','Migrating to cloud'].map(o=>`<option value="${o}"${l.cloudStr===o?' selected':''}>${o}</option>`).join('')}</select></div></div><div class="card"><div class="card-title"><div class="card-icon">&#128202;</div>Self-assessed IAM maturity</div><input type="range" min="1" max="5" value="${l.maturity}" id="f-mat"><div class="mat-track">${MAT.map((m,i)=>`<span>${i+1} — ${m}</span>`).join('')}</div><div style="text-align:center;margin-top:12px" id="mat-disp"><span class="badge b-blue">Level ${l.maturity} — ${MAT[l.maturity-1]}</span></div></div><div class="card"><div class="card-title"><div class="card-icon">&#9889;</div>Known challenges</div><textarea class="fta" id="f-ch" placeholder="Main identity-related challenges...">${esc(l.challenges)}</textarea></div>`;}
+
+function s2(){return`<div class="ph"><div class="ph-title">Application landscape</div><div class="ph-desc">Add all applications in scope.</div></div><div class="card"><div class="card-title"><div class="card-icon">&#10133;</div>Add application</div><div class="fr2"><div class="fg"><label class="fl">Application name *</label><input class="fi" id="na-name" placeholder="e.g. SAP, Salesforce, Workday..."></div><div class="fg"><label class="fl">Application type</label><select class="fs" id="na-type">${APP_TYPES.map(t=>`<option>${t}</option>`).join('')}</select></div></div><div class="fr3"><div class="fg"><label class="fl">No. of users</label><input class="fi" id="na-users" type="number" placeholder="e.g. 500"></div><div class="fg"><label class="fl">Auth method</label><select class="fs" id="na-auth">${AUTH_METHODS.map(m=>`<option>${m}</option>`).join('')}</select></div><div class="fg"><label class="fl">Department / owner</label><input class="fi" id="na-dept" placeholder="e.g. Finance, HR"></div></div><div class="fg"><label class="fl">Notes / compliance requirements</label><input class="fi" id="na-notes" placeholder="Special access requirements, compliance scope, known issues..."></div><button class="btn btn-primary" onclick="addApp()">+ Add application</button></div>${S.apps.length===0?'<div class="card" style="text-align:center;padding:36px;color:var(--text-soft);font-size:13px">No applications added yet.</div>':`<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th style="padding-left:16px">Application</th><th>Type</th><th>Users</th><th>Auth</th><th>Department</th><th></th></tr></thead><tbody>${S.apps.map(a=>`<tr><td style="padding-left:16px;font-weight:500">${esc(a.name)}</td><td><span class="badge b-blue">${esc(a.type)}</span></td><td>${esc(a.users)||'—'}</td><td>${esc(a.auth)}</td><td>${esc(a.dept)||'—'}</td><td style="padding-right:12px"><button class="btn btn-danger btn-sm" onclick="removeApp('${a.id}')">Remove</button></td></tr>`).join('')}</tbody></table></div><div style="font-size:12px;color:var(--text-soft);margin-top:6px">${S.apps.length} application${S.apps.length!==1?'s':''} added</div>`}`;}
+
+function s3(){if(!S.apps.length)return'<div class="card" style="text-align:center;padding:36px;color:var(--text-soft)">No applications added. Go back to add applications first.</div>';return`<div class="ph"><div class="ph-title">Select critical applications</div><div class="ph-desc">Mark apps that are business-critical, hold sensitive data, or are in compliance scope.</div></div><div class="alert alert-info">Click cards to toggle. Critical apps get individual gap assessments in the Product Owner report.</div><div class="app-grid">${S.apps.map(a=>`<div class="app-card${S.critIds.includes(a.id)?' crit':''}" onclick="toggleCrit('${a.id}')"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span class="badge b-blue" style="font-size:10px">${esc(a.type)}</span><span style="font-size:16px">${S.critIds.includes(a.id)?'&#10003;':''}</span></div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px">${esc(a.name)}</div><div style="font-size:11px;color:var(--text-soft)">${esc(a.users)||'?'} users &middot; ${esc(a.auth)}</div>${a.dept?`<div style="font-size:11px;color:var(--text-soft);margin-top:2px">${esc(a.dept)}</div>`:''}</div>`).join('')}</div><div style="margin-top:14px;font-size:13px;color:var(--text-mid);font-weight:500">${S.critIds.length} critical application${S.critIds.length!==1?'s':''} selected</div>`;}
+
+function s4(){const aiQs=S.qs.filter(q=>q.isAI);return`<div class="ph"><div class="ph-title">Stakeholder interview</div><div class="ph-desc">Record responses to IGA best-practice questions and generate AI follow-ups.</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div style="font-size:13px;color:var(--text-mid)"><strong>${S.qs.filter(q=>!q.isAI).length}</strong> standard &nbsp;&middot;&nbsp; <strong>${aiQs.length}</strong> AI-generated</div><button class="btn btn-primary" onclick="genAIQs()" ${S.aiQLd?'disabled':''}>${S.aiQLd?'<span class="spin"></span><span class="pulse">Generating...</span>':S.aiQDone?'&#8635; Regenerate AI questions':'&#10022; Generate AI questions'}</button></div>${S.aiQLd?'<div class="alert alert-info">Generating targeted follow-up questions...</div>':''}${S.qs.map(q=>`<div class="qcard${q.isAI?' ai-q':''}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><span class="qcat">${esc(q.cat)}</span>${q.isAI?'<span class="badge b-blue" style="font-size:10px">AI generated</span>':''}</div><div class="qtxt">${esc(q.q)}</div><textarea class="fta" style="min-height:60px" placeholder="Stakeholder response..." oninput="S.ans['${q.id}']=this.value">${esc(S.ans[q.id]||'')}</textarea></div>`).join('')}`;}
+
+function s5(){const answered=Object.keys(S.ans).filter(id=>S.ans[id]&&S.ans[id].trim()).length;if(!S.gaps){return`<div class="ph"><div class="ph-title">Gap analysis</div><div class="ph-desc">AI analysis of discovery responses mapped to IGA best practices and Anugal capabilities.</div></div><div class="card" style="text-align:center;padding:44px"><div style="font-size:38px;margin-bottom:12px">&#128202;</div><div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px">${answered} of ${S.qs.length} questions answered</div><div style="font-size:13px;color:var(--text-soft);margin-bottom:26px">${answered<5?'Answer at least 5 questions for a meaningful analysis.':'Ready to generate.'}</div><button class="btn btn-primary btn-lg" onclick="genGaps()" ${S.gapLd||answered<3?'disabled':''}>${S.gapLd?'<span class="spin"></span><span class="pulse">Analyzing...</span>':'&#10022; Generate gap analysis'}</button>${S.gapLd?'<div style="font-size:12px;color:var(--text-soft);margin-top:12px">Mapping responses to IGA best practices and Anugal capabilities...</div>':''}</div>`;}
+const g=S.gaps,ic={High:'b-red',Medium:'b-orange',Low:'b-green'};
+return`<div class="ph"><div class="ph-title">Gap analysis results</div><div class="ph-desc">Generated from ${answered} discovery responses.</div></div><div class="metrics-row"><div class="metric-card"><div class="mv">${g.maturityScore}/5</div><div class="mk">IAM maturity</div><div class="ms">${esc(g.maturityLabel)}</div></div><div class="metric-card"><div class="mv">${g.gaps.length}</div><div class="mk">Gaps identified</div></div><div class="metric-card"><div class="mv" style="color:var(--danger)">${g.gaps.filter(x=>x.impact==='High').length}</div><div class="mk">High impact gaps</div></div></div><div class="card" style="background:var(--surface2);border-color:rgba(37,99,235,.12)"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-soft);margin-bottom:8px">Executive summary</div><div style="font-size:14px;line-height:1.7">${esc(g.summary)}</div></div><div class="section-label">Gaps identified</div>${g.gaps.map(gap=>`<div class="gap-card"><div class="gap-hdr"><div class="gap-area">${esc(gap.area)}</div><span class="badge ${ic[gap.impact]||'b-blue'}">${gap.impact} impact</span></div><div class="gap-pair"><div class="sub-box"><div class="sub-lbl">Current state</div><div class="sub-val">${esc(gap.current)}</div></div><div class="sub-box"><div class="sub-lbl">Gap identified</div><div class="sub-val">${esc(gap.gap)}</div></div></div>${gap.manualWork?`<div style="font-size:12px;color:var(--warn);margin-bottom:8px;padding:6px 10px;background:var(--warn-bg);border-radius:6px">&#9888; Manual dependency: ${esc(gap.manualWork)}</div>`:''}<div class="anugal-box"><div class="anugal-lbl">Anugal resolution — ${esc(gap.anugalModule)}</div><div class="anugal-val">${esc(gap.anugalFix)}</div></div></div>`).join('')}${g.painPoints&&g.painPoints.length?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px"><div class="card"><div class="card-title">Key pain points</div><ul class="pt-list">${g.painPoints.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div><div class="card"><div class="card-title">Manual dependencies</div>${(g.manualProcesses||[]).map(p=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-mid)">&#8594; ${esc(p)}</div>`).join('')}</div></div>`:''}${g.quickWins&&g.quickWins.length?`<div class="card" style="margin-top:14px"><div class="card-title">Quick wins</div>${g.quickWins.map(w=>`<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-mid);display:flex;gap:8px"><span style="color:var(--ok)">&#8594;</span>${esc(w)}</div>`).join('')}</div>`:''}<div style="margin-top:12px"><button class="btn" onclick="S.gaps=null;saveSess();renderContent()">&#8635; Regenerate</button></div>`;}
+
+function s6(){const ready=S.c&&S.c.name&&S.gaps;return`<div class="ph"><div class="ph-title">Generate reports</div><div class="ph-desc">Two report formats tailored to different audiences.</div></div><div class="metrics-row"><div class="metric-card"><div class="mv">${S.apps.length}</div><div class="mk">Applications</div></div><div class="metric-card"><div class="mv">${S.critIds.length}</div><div class="mk">Critical apps</div></div><div class="metric-card"><div class="mv">${S.gaps?S.gaps.gaps.length:0}</div><div class="mk">Gaps documented</div></div></div>${!S.c.name?'<div class="alert alert-danger">Customer name required — complete Step 1 first.</div>':''}${!S.gaps?'<div class="alert alert-warn">Gap analysis required — complete Step 6 first.</div>':''}<div class="report-grid"><div class="report-card teal"><div class="report-card-icon">&#128295;</div><div class="report-card-for" style="color:#0891b2">For Product Owners / Application Teams</div><div class="report-card-title">Application Gap Analysis Report</div><div class="report-card-desc">Technical, per-application report covering auth gaps, access control issues, integration requirements, and specific Anugal module configurations for each critical application.</div><div style="margin-bottom:14px">${['Per-app gap breakdown','Auth method analysis','Access control gaps','Anugal module config','Technical remediation','Integration requirements'].map(t=>`<span class="report-tag b-blue">${t}</span>`).join('')}</div><button class="btn btn-teal btn-lg" style="width:100%;justify-content:center" onclick="genPORpt()" ${!ready||S.poRptLd?'disabled':''}>${S.poRptLd?'<span class="spin"></span><span class="pulse">Generating PO report...</span>':S.poRptDone?'&#8595; Download PO report again':'&#10022; Generate PO report'}</button>${S.poRptDone?'<div class="alert alert-success" style="margin-top:10px;margin-bottom:0">&#10003; PO report downloaded</div>':''}</div><div class="report-card navy"><div class="report-card-icon">&#128202;</div><div class="report-card-for" style="color:var(--navy)">For CIO / CFO / Executive Leadership</div><div class="report-card-title">Executive Discovery Report</div><div class="report-card-desc">Strategic report covering business risk, compliance exposure, operational cost of current state, ROI case for Anugal, and a phased implementation roadmap with investment summary.</div><div style="margin-bottom:14px">${['Business risk assessment','Compliance exposure','Operational cost analysis','ROI & investment case','Strategic roadmap','90-day quick wins'].map(t=>`<span class="report-tag b-navy">${t}</span>`).join('')}</div><button class="btn btn-navy btn-lg" style="width:100%;justify-content:center" onclick="genExecRpt()" ${!ready||S.exRptLd?'disabled':''}>${S.exRptLd?'<span class="spin"></span><span class="pulse">Generating exec report...</span>':S.exRptDone?'&#8595; Download exec report again':'&#10022; Generate executive report'}</button>${S.exRptDone?'<div class="alert alert-success" style="margin-top:10px;margin-bottom:0">&#10003; Executive report downloaded</div>':''}</div></div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px"><div><div class="card-title" style="margin-bottom:10px">PO report includes</div><ul class="checklist">${['All applications with auth & user counts','Per-app identity gap analysis','Authentication & SSO weaknesses','Privileged access findings per app','Anugal module mapping per application','Technical integration requirements','Implementation priority matrix'].map(i=>`<li>${i}</li>`).join('')}</ul></div><div><div class="card-title" style="margin-bottom:10px">Executive report includes</div><ul class="checklist">${['Executive summary (2-page)','Business risk heat map','Compliance gap overview','Cost of current manual processes','ROI projection & productivity gains','Investment summary by phase','3-phase strategic roadmap','Board-ready next steps'].map(i=>`<li>${i}</li>`).join('')}</ul></div></div></div>`;}
+
+function bindEv(){
+  const b=(id,fn)=>on(id,'change',e=>fn(e.target.value));
+  const bi=(id,fn)=>on(id,'input',e=>fn(e.target.value));
+  if(S.step===0){b('f-name',v=>{S.c.name=v;$('sess-badge').textContent=v||'New session';});b('f-ind',v=>S.c.industry=v);b('f-size',v=>S.c.size=v);b('f-web',v=>S.c.website=v);bi('f-bg',v=>S.c.bg=v);b('f-cn',v=>S.c.cName=v);b('f-ce',v=>S.c.cEmail=v);b('f-cr',v=>S.c.cRole=v);b('f-date',v=>S.c.date=v);on('logo-inp','change',handleLogo);}
+  if(S.step===1){b('f-ctool',v=>S.l.customTool=v);b('f-tu',v=>S.l.totalUsers=v);b('f-ti',v=>S.l.totalIds=v);b('f-ad',v=>S.l.adDomains=v);b('f-cs',v=>S.l.cloudStr=v);bi('f-ch',v=>S.l.challenges=v);on('f-mat','input',e=>{S.l.maturity=parseInt(e.target.value);const d=$('mat-disp');if(d)d.innerHTML=`<span class="badge b-blue">Level ${S.l.maturity} — ${MAT[S.l.maturity-1]}</span>`;});}
+}
+function handleLogo(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{S.c.logo=e.target.result;S.c.logoName=f.name;saveSess();renderContent();};r.readAsDataURL(f);}
+function toggleTool(el,t){const i=S.l.tools.indexOf(t);i>-1?S.l.tools.splice(i,1):S.l.tools.push(t);el.classList.toggle('sel',S.l.tools.includes(t));saveSess();}
+function addApp(){const nm=$('na-name')?.value?.trim();if(!nm)return;S.apps.push({id:'a'+Date.now(),name:nm,type:$('na-type')?.value||'ERP',users:$('na-users')?.value||'',auth:$('na-auth')?.value||'',dept:$('na-dept')?.value||'',notes:$('na-notes')?.value||''});saveSess();renderContent();}
+function removeApp(id){S.apps=S.apps.filter(a=>a.id!==id);S.critIds=S.critIds.filter(x=>x!==id);saveSess();renderContent();}
+function toggleCrit(id){const i=S.critIds.indexOf(id);i>-1?S.critIds.splice(i,1):S.critIds.push(id);saveSess();renderContent();}
+
+async function genAIQs(){if(S.aiQLd)return;S.aiQLd=true;renderContent();try{const answered=S.qs.filter(q=>S.ans[q.id]).map(q=>`Q: ${q.q}\nA: ${S.ans[q.id]}`).join('\n\n');const crit=S.apps.filter(a=>S.critIds.includes(a.id)).map(a=>`${a.name} (${a.type})`).join(', ');const txt=await callAPI(`Senior IGA consultant. Generate 5 targeted follow-up interview questions.\nCustomer: ${S.c.name} | Industry: ${S.c.industry} | Size: ${S.c.size}\nTools: ${S.l.tools.join(', ')||'none'} | Challenges: ${S.l.challenges||'none'}\nCritical apps: ${crit||'none'}\nAnswers so far:\n${answered||'none yet'}\nGenerate 5 probing questions to uncover deeper IGA gaps specific to this customer.\nReturn ONLY JSON: [{"id":"ai1","cat":"Category","q":"Question text","isAI":true}]`);S.qs=[...SQS,...pj(txt)];S.aiQDone=true;}catch(e){toast('Failed to generate questions: '+e.message);}finally{S.aiQLd=false;saveSess();renderContent();}}
+
+async function genGaps(){if(S.gapLd)return;S.gapLd=true;renderContent();try{const qa=S.qs.map(q=>`[${q.cat}] ${q.q}\n> ${S.ans[q.id]||'Not answered'}`).join('\n\n');const crit=S.apps.filter(a=>S.critIds.includes(a.id)).map(a=>`${a.name} (${a.type}, auth: ${a.auth})`).join(', ');const txt=await callAPI(`IGA gap analysis expert. Customer: ${S.c.name} | Industry: ${S.c.industry} | Size: ${S.c.size}\nTools: ${S.l.tools.join(', ')} | Users: ${S.l.totalUsers} | Maturity: ${S.l.maturity}/5\nCloud: ${S.l.cloudStr} | Challenges: ${S.l.challenges}\nCritical apps: ${crit||'none'}\nQ&A:\n${qa}\nReturn ONLY JSON:\n{"summary":"2-3 sentences","maturityScore":2,"maturityLabel":"Developing","gaps":[{"area":"name","current":"current state","gap":"gap description","impact":"High|Medium|Low","manualWork":"or empty","anugalModule":"module","anugalFix":"resolution"}],"painPoints":["p1","p2","p3"],"manualProcesses":["m1","m2","m3"],"quickWins":["w1","w2"],"recs":["r1","r2","r3"]}`);S.gaps=pj(txt);if(!S.done.includes(5))S.done.push(5);}catch(e){toast('Gap analysis failed: '+e.message);}finally{S.gapLd=false;saveSess();renderContent();}}
+
+async function genPORpt(){if(S.poRptLd||!S.c.name||!S.gaps)return;S.poRptLd=true;renderContent();try{const crit=S.apps.filter(a=>S.critIds.includes(a.id));const critDetail=crit.map(a=>`- ${a.name}: type=${a.type}, users=${a.users||'?'}, auth=${a.auth}, dept=${a.dept||'N/A'}, notes=${a.notes||'none'}`).join('\n');const txt=await callAPI(`IGA architect writing an Application Gap Analysis Report for Product Owners.\nCustomer: ${S.c.name} | Industry: ${S.c.industry} | Size: ${S.c.size}\nIAM tools: ${S.l.tools.join(', ')} | Maturity: ${S.l.maturity}/5\nCritical applications:\n${critDetail||'none'}\nGap analysis: ${JSON.stringify(S.gaps)}\nWrite a technical per-application report.\nReturn ONLY JSON:\n{"intro":"2 paragraph technical overview","appAnalyses":[{"appName":"name","currentState":"current IGA state","authGaps":"auth/SSO gaps","accessGaps":"access control gaps","complianceRisk":"compliance risk","anugalModules":["m1","m2"],"integrationSteps":["s1","s2","s3"],"priority":"High|Medium|Low","effort":"Low|Medium|High"}],"crossAppGaps":["g1","g2","g3"],"priorityMatrix":[{"app":"name","action":"action","priority":"High","effort":"Low"}],"technicalRecs":["r1","r2","r3","r4"],"implementationNotes":"technical guidance paragraph"}`);const rpt=pj(txt);buildPODoc(rpt);S.poRptDone=true;if(!S.done.includes(6))S.done.push(6);}catch(e){toast('PO report failed: '+e.message);}finally{S.poRptLd=false;saveSess();renderContent();}}
+
+async function genExecRpt(){if(S.exRptLd||!S.c.name||!S.gaps)return;S.exRptLd=true;renderContent();try{const crit=S.apps.filter(a=>S.critIds.includes(a.id));const txt=await callAPI(`Strategic advisor writing an executive IGA Discovery Report for CIO and CFO.\nCustomer: ${S.c.name} | Industry: ${S.c.industry} | Size: ${S.c.size}\nIAM maturity: ${S.l.maturity}/5 (${MAT[S.l.maturity-1]}) | Cloud: ${S.l.cloudStr} | Users: ${S.l.totalUsers}\nCritical apps: ${crit.map(a=>a.name).join(', ')||'none'}\nGaps: ${S.gaps.gaps.length} total, ${S.gaps.gaps.filter(g=>g.impact==='High').length} high impact\nChallenges: ${S.l.challenges}\nManual processes: ${(S.gaps.manualProcesses||[]).join(', ')}\nBusiness language, no deep technical jargon. Focus on risk, cost, and ROI.\nReturn ONLY JSON:\n{"execSummary":"3 paragraph executive summary for CIO/CFO","businessRisks":[{"risk":"title","impact":"business impact","likelihood":"High|Medium|Low","category":"Operational|Compliance|Security|Financial"}],"complianceExposure":"compliance gap paragraph","operationalCost":"cost of manual processes paragraph","roiCase":"savings and ROI paragraph","investmentSummary":{"phases":[{"phase":"Phase 1 (0-90 days)","focus":"focus","value":"value","investment":"Low|Medium|High"}]},"strategicRoadmap":[{"phase":"Phase 1","title":"title","duration":"0-3 months","objectives":["o1","o2"],"outcomes":["r1","r2"]}],"quickWins":["w1","w2","w3"],"nextSteps":["s1","s2","s3","s4"],"closingStatement":"2 sentence compelling close"}`);const rpt=pj(txt);buildExecDoc(rpt);S.exRptDone=true;if(!S.done.includes(6))S.done.push(6);}catch(e){toast('Executive report failed: '+e.message);}finally{S.exRptLd=false;saveSess();renderContent();}}
+
+function dlDoc(html,fn){const b=new Blob([html],{type:'application/msword'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),300);}
+
+const BS=`body{font-family:Calibri,sans-serif;margin:2.5cm;color:#1f2937;font-size:11pt;line-height:1.6}h1{font-size:24pt;color:#0d1b3e;margin:0 0 8pt;font-weight:700}h2{font-size:14pt;color:#0d1b3e;border-bottom:2px solid #0d1b3e;padding-bottom:5pt;margin:22pt 0 10pt;font-weight:700}h3{font-size:12pt;color:#2563eb;margin:14pt 0 6pt;font-weight:600}p{margin-bottom:10pt}table{border-collapse:collapse;width:100%;margin:10pt 0}th{background:#0d1b3e;color:#fff;padding:8pt 7pt;font-size:10pt;text-align:left;font-weight:600}td{border:1px solid #d1d5db;padding:7pt;font-size:10pt;vertical-align:top}tr:nth-child(even) td{background:#f8faff}.cover{text-align:center;padding:70pt 0 60pt;page-break-after:always}.ib{background:#eff6ff;border-left:4px solid #0d1b3e;padding:14pt 16pt;margin:12pt 0}.tib{background:#f0fdfa;border-left:4px solid #0891b2;padding:14pt 16pt;margin:12pt 0}ul,ol{margin:8pt 0;padding-left:22pt}li{margin:5pt 0}.footer{margin-top:48pt;text-align:center;border-top:1px solid #e5e7eb;padding-top:12pt;color:#9ca3af;font-size:9pt}.th{background:#fee2e2;color:#b91c1c;padding:2pt 6pt;border-radius:3pt;font-size:9pt;font-weight:600}.tm{background:#fef3c7;color:#92400e;padding:2pt 6pt;border-radius:3pt;font-size:9pt;font-weight:600}.tl{background:#d1fae5;color:#065f46;padding:2pt 6pt;border-radius:3pt;font-size:9pt;font-weight:600}`;
+
+function logoH(c){return c.logo?`<img src="${c.logo}" style="height:80px;max-width:240px;object-fit:contain"/>`:`<div style="font-size:26pt;font-weight:bold;color:#0d1b3e">${c.name||'Customer'}</div>`;}
+
+function buildPODoc(rpt){
+  const c=S.c,l=S.l,g=S.gaps;
+  const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+  const allRows=S.apps.map(a=>`<tr><td><strong>${a.name}</strong></td><td>${a.type}</td><td style="text-align:center">${a.users||'?'}</td><td>${a.auth}</td><td>${a.dept||'—'}</td><td style="text-align:center">${S.critIds.includes(a.id)?'<strong>&#9733; Critical</strong>':''}</td></tr>`).join('');
+  const appSects=(rpt.appAnalyses||[]).map(aa=>`<h2>&#128230; ${aa.appName}</h2><div style="margin-bottom:6pt"><span class="${aa.priority==='High'?'th':aa.priority==='Medium'?'tm':'tl'}">Priority: ${aa.priority}</span> &nbsp;<span style="background:#f0f9ff;color:#0891b2;padding:2pt 6pt;border-radius:3pt;font-size:9pt;font-weight:600">Effort: ${aa.effort}</span></div><h3>Current identity management state</h3><p>${aa.currentState}</p><h3>Authentication &amp; SSO gaps</h3><p>${aa.authGaps}</p><h3>Access control &amp; role management gaps</h3><p>${aa.accessGaps}</p><h3>Compliance risk</h3><p>${aa.complianceRisk}</p><h3>Anugal modules required</h3><ul>${(aa.anugalModules||[]).map(m=>`<li>${m}</li>`).join('')}</ul><h3>Integration &amp; implementation steps</h3><ol>${(aa.integrationSteps||[]).map(s=>`<li>${s}</li>`).join('')}</ol>`).join('');
+  const prioRows=(rpt.priorityMatrix||[]).map(r=>`<tr><td><strong>${r.app}</strong></td><td>${r.action}</td><td><span class="${r.priority==='High'?'th':r.priority==='Medium'?'tm':'tl'}">${r.priority}</span></td><td>${r.effort}</td></tr>`).join('');
+  const gapRows=(g?.gaps||[]).map(x=>`<tr><td><strong>${x.area}</strong></td><td>${x.current}</td><td>${x.gap}</td><td><span class="${x.impact==='High'?'th':x.impact==='Medium'?'tm':'tl'}">${x.impact}</span></td><td>${x.anugalModule}</td><td>${x.anugalFix}</td></tr>`).join('');
+  dlDoc(`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--><style>${BS}</style></head><body><div class="cover"><div style="margin-bottom:24pt">${logoH(c)}</div><div style="width:75%;margin:0 auto"><div style="background:#0891b2;color:#fff;padding:8pt 20pt;font-size:11pt;letter-spacing:.1em;margin-bottom:20pt">APPLICATION GAP ANALYSIS REPORT</div><h1 style="font-size:26pt">Application Identity Gap Analysis</h1><h2 style="border:none;font-size:18pt;color:#0891b2;margin:4pt 0 24pt;font-weight:400">${c.name}</h2><div class="tib" style="text-align:left"><table style="border:none;margin:0"><tr><td style="border:none;color:#6b7280;width:40%;font-size:10pt">Audience</td><td style="border:none;font-weight:bold;font-size:10pt;color:#0891b2">Product Owners &bull; Application Teams &bull; IT Architects</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Prepared by</td><td style="border:none;font-size:10pt">Anugal Identity Governance Team</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Primary contact</td><td style="border:none;font-size:10pt">${c.cName||'N/A'}${c.cRole?' &mdash; '+c.cRole:''}</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Assessment date</td><td style="border:none;font-size:10pt">${c.date}</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">IAM maturity</td><td style="border:none;font-size:10pt">${l.maturity}/5 &mdash; ${MAT[l.maturity-1]}</td></tr></table></div><p style="font-size:9pt;color:#9ca3af;margin-top:18pt">CONFIDENTIAL &mdash; FOR TECHNICAL TEAMS ONLY</p></div></div><h2>Technical overview</h2><p style="white-space:pre-wrap">${rpt.intro||''}</p><h2>Application inventory</h2><table><tr><th>Application</th><th>Type</th><th style="text-align:center">Users</th><th>Auth method</th><th>Department</th><th>Status</th></tr>${allRows}</table>${appSects}<h2>Cross-application gaps</h2><ul>${(rpt.crossAppGaps||[]).map(g=>`<li>${g}</li>`).join('')}</ul><h2>Full gap analysis</h2><table><tr><th style="width:12%">Area</th><th style="width:17%">Current state</th><th style="width:17%">Gap</th><th style="width:8%">Impact</th><th style="width:16%">Anugal module</th><th style="width:30%">Resolution</th></tr>${gapRows}</table><h2>Implementation priority matrix</h2><table><tr><th>Application</th><th>Action required</th><th>Priority</th><th>Effort</th></tr>${prioRows}</table><h2>Technical recommendations</h2><ol>${(rpt.technicalRecs||[]).map(r=>`<li>${r}</li>`).join('')}</ol><h2>Implementation notes</h2><p>${rpt.implementationNotes||''}</p><h2>Manual processes to automate</h2><ul>${(g?.manualProcesses||[]).map(p=>`<li>${p}</li>`).join('')}</ul><h2>Quick wins</h2><ul>${(g?.quickWins||[]).map(w=>`<li>${w}</li>`).join('')}</ul><div class="footer">Confidential &mdash; Anugal Identity Governance &mdash; Technical Report &nbsp;|&nbsp; ${c.name} &nbsp;|&nbsp; ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></body></html>`,`Anugal_AppGapAnalysis_${(c.name||'Report').replace(/\s+/g,'_')}_${c.date}.doc`);
+}
+
+function buildExecDoc(rpt){
+  const c=S.c,l=S.l,g=S.gaps;
+  const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+  const riskRows=(rpt.businessRisks||[]).map(r=>`<tr><td><strong>${r.risk}</strong></td><td>${r.impact}</td><td><span class="${r.likelihood==='High'?'th':r.likelihood==='Medium'?'tm':'tl'}">${r.likelihood}</span></td><td>${r.category}</td></tr>`).join('');
+  const roadmap=(rpt.strategicRoadmap||[]).map(ph=>`<h3>${ph.phase}: ${ph.title} <span style="font-size:10pt;color:#6b7280;font-weight:400">(${ph.duration})</span></h3><div style="display:flex;gap:16pt"><div style="flex:1"><strong style="font-size:10pt;color:#0d1b3e">Objectives</strong><ul>${(ph.objectives||[]).map(o=>`<li style="font-size:10pt">${o}</li>`).join('')}</ul></div><div style="flex:1"><strong style="font-size:10pt;color:#059669">Expected outcomes</strong><ul>${(ph.outcomes||[]).map(o=>`<li style="font-size:10pt">${o}</li>`).join('')}</ul></div></div>`).join('');
+  const invRows=(rpt.investmentSummary?.phases||[]).map(ph=>`<tr><td><strong>${ph.phase}</strong></td><td>${ph.focus}</td><td>${ph.value}</td><td>${ph.investment}</td></tr>`).join('');
+  dlDoc(`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset="utf-8"><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]--><style>${BS}</style></head><body><div class="cover"><div style="margin-bottom:24pt">${logoH(c)}</div><div style="width:75%;margin:0 auto"><div style="background:#0d1b3e;color:#fff;padding:8pt 20pt;font-size:11pt;letter-spacing:.1em;margin-bottom:20pt">EXECUTIVE DISCOVERY REPORT &mdash; IDENTITY GOVERNANCE</div><h1 style="font-size:26pt">Identity Governance<br>Executive Assessment</h1><h2 style="border:none;font-size:18pt;color:#2563eb;margin:4pt 0 24pt;font-weight:400">${c.name}</h2><div class="ib" style="text-align:left"><table style="border:none;margin:0"><tr><td style="border:none;color:#6b7280;width:40%;font-size:10pt">Audience</td><td style="border:none;font-weight:bold;font-size:10pt;color:#2563eb">CIO &bull; CFO &bull; Executive Leadership &bull; Board</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Prepared by</td><td style="border:none;font-size:10pt">Anugal Identity Governance Team</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Primary contact</td><td style="border:none;font-size:10pt">${c.cName||'N/A'}${c.cRole?' &mdash; '+c.cRole:''}</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Assessment date</td><td style="border:none;font-size:10pt">${c.date}</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Industry</td><td style="border:none;font-size:10pt">${c.industry||'N/A'}</td></tr><tr><td style="border:none;color:#6b7280;font-size:10pt">Organization size</td><td style="border:none;font-size:10pt">${c.size||'N/A'}</td></tr></table></div><p style="font-size:9pt;color:#9ca3af;margin-top:18pt">CONFIDENTIAL &mdash; EXECUTIVE USE ONLY</p></div></div><h2>Executive summary</h2><p style="white-space:pre-wrap;line-height:1.8">${rpt.execSummary||''}</p><h2>Key findings at a glance</h2><table><tr><td style="text-align:center;padding:12pt"><div style="font-size:22pt;font-weight:bold;color:#0d1b3e">${g.gaps.length}</div><div style="font-size:10pt;color:#6b7280">Total gaps</div></td><td style="text-align:center;padding:12pt"><div style="font-size:22pt;font-weight:bold;color:#b91c1c">${g.gaps.filter(x=>x.impact==='High').length}</div><div style="font-size:10pt;color:#6b7280">High impact</div></td><td style="text-align:center;padding:12pt"><div style="font-size:22pt;font-weight:bold;color:#0d1b3e">${S.apps.length}</div><div style="font-size:10pt;color:#6b7280">Applications</div></td><td style="text-align:center;padding:12pt"><div style="font-size:22pt;font-weight:bold;color:#0d1b3e">${l.maturity}/5</div><div style="font-size:10pt;color:#6b7280">Maturity score</div></td></tr></table><h2>Business risk assessment</h2><table><tr><th>Risk</th><th>Business impact</th><th>Likelihood</th><th>Category</th></tr>${riskRows}</table><h2>Compliance exposure</h2><p>${rpt.complianceExposure||''}</p><h2>Operational cost of current state</h2><p>${rpt.operationalCost||''}</p><h3>Critical manual processes</h3><ul>${(g?.manualProcesses||[]).map(p=>`<li>${p}</li>`).join('')}</ul><h2>Return on investment &mdash; Anugal</h2><p>${rpt.roiCase||''}</p>${invRows?`<h3>Investment summary by phase</h3><table><tr><th>Phase</th><th>Focus area</th><th>Business value</th><th>Investment</th></tr>${invRows}</table>`:''}<h2>Strategic implementation roadmap</h2>${roadmap}<h2>90-day quick wins</h2><ul>${(rpt.quickWins||[]).map(w=>`<li>${w}</li>`).join('')}</ul><h2>Recommended next steps</h2><ol>${(rpt.nextSteps||[]).map(s=>`<li>${s}</li>`).join('')}</ol>${rpt.closingStatement?`<div class="ib" style="margin-top:20pt"><p style="font-style:italic;font-size:12pt;color:#0d1b3e;margin:0">${rpt.closingStatement}</p></div>`:''}<div style="margin-top:32pt;background:#f8faff;border:1px solid #e2e8f0;border-radius:4pt;padding:16pt"><strong style="font-size:11pt;color:#0d1b3e">About Anugal</strong><p style="font-size:10pt;color:#475569;margin-top:6pt">Anugal is an Identity Governance &amp; Administration platform built to automate joiner-mover-leaver workflows, access certifications, role management, and compliance reporting.</p></div><div class="footer">Confidential &mdash; Anugal Identity Governance &mdash; Executive Report &nbsp;|&nbsp; ${c.name} &nbsp;|&nbsp; ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></body></html>`,`Anugal_ExecutiveReport_${(c.name||'Report').replace(/\s+/g,'_')}_${c.date}.doc`);
+}
+
+updateKeyStatus();
+render();
+</script>
+</body>
+</html>
