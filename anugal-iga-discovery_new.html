@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anugal IGA Discovery Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1b3e;--navy-l:#1e3166;
+  --blue:#2563eb;--blue-l:#3b82f6;
+  --teal:#0891b2;--violet:#7c3aed;
+  --surface:#f5f7ff;--surface2:#eef2ff;
+  --white:#fff;--border:#e2e8f0;--border-mid:#cbd5e1;
+  --text:#0f172a;--text-mid:#475569;--text-soft:#94a3b8;
+  --danger:#dc2626;--danger-bg:#fef2f2;
+  --warn:#d97706;--warn-bg:#fffbeb;
+  --ok:#059669;--ok-bg:#f0fdf4;
+  --info-bg:#eff6ff;
+  --r:10px;--r-sm:6px;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 16px rgba(0,0,0,.1);
+  --font:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--surface);color:var(--text);min-height:100vh;display:flex}
+.sb{width:244px;min-width:244px;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.sb-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo{font-size:19px;font-weight:600;color:#fff;letter-spacing:-.3px}
+.sb-logo span{color:#22d3ee}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.32);margin-top:2px}
+.sb-nav{padding:12px 10px;flex:1}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:6px;cursor:pointer;transition:all .15s;color:rgba(255,255,255,.48);font-size:12.5px;margin-bottom:1px;user-select:none}
+.ni:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.78)}
+.ni.active{background:rgba(37,99,235,.28);color:#fff;font-weight:500}
+.ni.done{color:rgba(16,185,129,.78)}
+.ni.done .ni-num{background:rgba(16,185,129,.16);color:#34d399;border-color:transparent}
+.ni-num{width:21px;height:21px;border-radius:50%;border:1.5px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.ni.active .ni-num{background:var(--blue);border-color:var(--blue);color:#fff}
+.ni-txt{flex:1;line-height:1.2}
+.ni-draft{width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0}
+.sb-footer{padding:10px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:3px}
+.sb-btn{display:flex;align-items:center;gap:7px;font-size:11px;padding:7px 9px;border-radius:6px;cursor:pointer;border:none;width:100%;text-align:left;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);transition:all .15s}
+.sb-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+.sb-btn.active-cfg{background:rgba(124,58,237,.25);color:rgba(167,139,250,.9)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;flex-shrink:0}
+.ai-dot.ok{background:#10b981}
+.ai-dot.warn{background:#f59e0b}
+.main{margin-left:244px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.bc{font-size:12.5px;color:var(--text-soft)}
+.bc strong{color:var(--text)}
+.bc a{color:var(--text-soft);text-decoration:none}
+.bc a:hover{color:var(--blue)}
+.topbar-r{display:flex;align-items:center;gap:8px}
+.sess-badge{font-size:11px;background:var(--info-bg);color:var(--blue);padding:3px 9px;border-radius:20px;font-weight:500;border:1px solid rgba(37,99,235,.16)}
+.save-indicator{font-size:11px;color:var(--text-soft);display:flex;align-items:center;gap:4px}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.content{padding:26px 30px;max-width:900px;width:100%}
+.nav-footer{display:flex;align-items:center;justify-content:space-between;padding:16px 30px;background:var(--white);border-top:1px solid var(--border);position:sticky;bottom:0;z-index:40;gap:10px}
+.nf-left{display:flex;align-items:center;gap:8px}
+.nf-right{display:flex;align-items:center;gap:8px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:12px;box-shadow:var(--sh)}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ci{width:22px;height:22px;background:var(--info-bg);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.ph{margin-bottom:18px}
+.ph-title{font-size:21px;font-weight:600;color:var(--navy);letter-spacing:-.4px}
+.ph-desc{font-size:12.5px;color:var(--text-mid);margin-top:4px;line-height:1.5}
+.fg{margin-bottom:12px}
+label.fl{display:block;font-size:11.5px;font-weight:500;color:var(--text-mid);margin-bottom:4px}
+input.fi,select.fs,textarea.fta{width:100%;padding:7px 10px;font-family:var(--font);font-size:12.5px;color:var(--text);background:var(--white);border:1px solid var(--border-mid);border-radius:var(--r-sm);outline:none;transition:border-color .15s,box-shadow .15s}
+input.fi:focus,select.fs:focus,textarea.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.fta{min-height:72px;resize:vertical;line-height:1.5}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.btn{padding:7px 14px;border-radius:var(--r-sm);border:1px solid var(--border-mid);background:var(--white);font-family:var(--font);font-size:12.5px;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn:hover:not(:disabled){background:var(--surface2)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover:not(:disabled){background:var(--blue-l);border-color:var(--blue-l)}
+.btn-navy{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-navy:hover:not(:disabled){background:var(--navy-l)}
+.btn-teal{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-teal:hover:not(:disabled){background:#0e7490}
+.btn-violet{background:var(--violet);color:#fff;border-color:var(--violet)}
+.btn-violet:hover:not(:disabled){background:#6d28d9}
+.btn-ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.btn-danger{color:var(--danger);border-color:#fca5a5}
+.btn-danger:hover:not(:disabled){background:var(--danger-bg)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-soft)}
+.btn-ghost:hover:not(:disabled){background:var(--surface2);color:var(--text)}
+.btn-outline-ok{color:var(--ok);border-color:rgba(5,150,105,.3)}
+.btn-outline-ok:hover:not(:disabled){background:var(--ok-bg)}
+.btn-sm{padding:4px 9px;font-size:11.5px}
+.btn-lg{padding:10px 18px;font-size:13.5px;font-weight:600}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10.5px;font-weight:500}
+.b-blue{background:var(--info-bg);color:var(--blue)}
+.b-green{background:var(--ok-bg);color:var(--ok)}
+.b-red{background:var(--danger-bg);color:var(--danger)}
+.b-orange{background:var(--warn-bg);color:var(--warn)}
+.b-navy{background:rgba(13,27,62,.08);color:var(--navy)}
+.b-violet{background:rgba(124,58,237,.08);color:var(--violet)}
+.b-gray{background:var(--surface2);color:var(--text-soft)}
+.chip-grid{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 11px;border-radius:20px;border:1px solid var(--border-mid);font-size:11.5px;cursor:pointer;transition:all .15s;background:var(--white);color:var(--text-mid);user-select:none}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.sel{background:var(--info-bg);color:var(--blue);border-color:rgba(37,99,235,.3);font-weight:500}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;padding:8px 11px;color:var(--text-soft);font-weight:500;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--surface)}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface)}
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px}
+.app-card{padding:13px;border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;background:var(--white)}
+.app-card:hover{border-color:var(--border-mid);box-shadow:var(--sh)}
+.app-card.crit{border-color:var(--blue);background:var(--info-bg)}
+.qcard{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh)}
+.qcard.ai-q{border-left:3px solid var(--blue)}
+.qcat{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin-bottom:3px;font-weight:500}
+.qtxt{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:8px;line-height:1.45}
+.gap-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh)}
+.gap-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.gap-area{font-size:13.5px;font-weight:600;color:var(--navy)}
+.gap-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:8px}
+.sub-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.sub-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-soft);margin-bottom:3px;font-weight:500}
+.sub-val{font-size:12px;line-height:1.5;color:var(--text-mid)}
+.anugal-box{background:linear-gradient(135deg,var(--info-bg),#f0f9ff);border:1px solid rgba(37,99,235,.15);border-radius:var(--r-sm);padding:9px 11px}
+.anugal-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:3px;font-weight:600}
+.anugal-val{font-size:12px;color:var(--text);line-height:1.5}
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh)}
+.mv{font-size:26px;font-weight:600;color:var(--navy);line-height:1}
+.mk{font-size:11.5px;color:var(--text-soft);margin-top:3px}
+.ms{font-size:10.5px;color:var(--text-soft);margin-top:2px}
+.alert{border-radius:var(--r-sm);padding:10px 13px;font-size:12.5px;margin-bottom:12px;border:1px solid;line-height:1.5}
+.alert-info{background:var(--info-bg);color:var(--blue);border-color:rgba(37,99,235,.18)}
+.alert-warn{background:var(--warn-bg);color:var(--warn);border-color:rgba(217,119,6,.2)}
+.alert-danger{background:var(--danger-bg);color:var(--danger);border-color:rgba(220,38,38,.2)}
+.alert-success{background:var(--ok-bg);color:var(--ok);border-color:rgba(5,150,105,.25)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border-mid);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--blue);cursor:pointer}
+.mat-track{display:flex;justify-content:space-between;font-size:9.5px;color:var(--text-soft);margin-top:5px}
+.prog-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin-bottom:4px}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s}
+.logo-box{width:110px;height:72px;border:1.5px dashed var(--border-mid);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color .15s}
+.logo-box:hover{border-color:var(--blue)}
+.logo-box img{max-width:100%;max-height:100%;object-fit:contain}
+.logo-ph{font-size:10.5px;color:var(--text-soft);text-align:center;line-height:1.5;padding:8px}
+.doc-drop{border:1.5px dashed var(--border-mid);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .15s;background:var(--white)}
+.doc-drop:hover,.doc-drop.drag{border-color:var(--blue);background:var(--info-bg)}
+.doc-file{display:flex;align-items:center;gap:9px;padding:8px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:7px}
+.doc-file-name{font-size:12px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-file-size{font-size:10.5px;color:var(--text-soft);flex-shrink:0}
+.checklist{list-style:none}
+.checklist li{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-mid)}
+.checklist li::before{content:"✓";color:var(--ok);font-weight:600;flex-shrink:0}
+.checklist li:last-child{border-bottom:none}
+.pt-list{list-style:none}
+.pt-list li{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-mid)}
+.pt-list li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--danger);flex-shrink:0;margin-top:5px}
+.pt-list li:last-child{border-bottom:none}
+.rpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.rpt-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--sh)}
+.rpt-card.teal{border-top:3px solid var(--teal)}
+.rpt-card.navy{border-top:3px solid var(--navy)}
+.rpt-card-aud{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.rpt-card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.rpt-card-desc{font-size:12px;color:var(--text-mid);line-height:1.55;margin-bottom:12px}
+.rpt-tag{display:inline-block;font-size:9.5px;padding:2px 6px;border-radius:20px;font-weight:500;margin:1.5px}
+.db-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px}
+.db-title{font-size:22px;font-weight:600;color:var(--navy);letter-spacing:-.4px}
+.db-sub{font-size:12.5px;color:var(--text-soft);margin-top:3px}
+.cust-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px}
+.cc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.cc:hover{box-shadow:var(--sh-md);border-color:rgba(37,99,235,.25);transform:translateY(-1px)}
+.cc-name{font-size:14.5px;font-weight:600;color:var(--navy);line-height:1.2;padding-right:36px}
+.cc-ind{font-size:11.5px;color:var(--text-soft);margin-top:2px}
+.cc-prog{margin:10px 0 6px}
+.cc-prog-label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-soft);margin-bottom:4px}
+.cc-meta{display:flex;gap:10px;font-size:11px;color:var(--text-soft);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);flex-wrap:wrap}
+.empty-state{text-align:center;padding:56px 32px}
+.empty-icon{font-size:44px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:5px}
+.empty-desc{font-size:12.5px;color:var(--text-mid);margin-bottom:18px}
+.step-prog{display:flex;align-items:flex-start;margin-bottom:20px;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow-x:auto}
+.sp-item{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:58px}
+.sp-item:not(:last-child)::after{content:'';position:absolute;top:11px;left:calc(50% + 12px);right:calc(-50% + 12px);height:1.5px;background:var(--border)}
+.sp-item.done:not(:last-child)::after{background:var(--ok)}
+.sp-circle{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-mid);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;z-index:1}
+.sp-item.active .sp-circle{border-color:var(--blue);background:var(--blue);color:#fff}
+.sp-item.done .sp-circle{border-color:var(--ok);background:var(--ok);color:#fff}
+.sp-label{font-size:9px;color:var(--text-soft);margin-top:4px;text-align:center;max-width:58px;line-height:1.25}
+.sp-item.active .sp-label{color:var(--blue);font-weight:500}
+.sp-item.done .sp-label{color:var(--ok)}
+.ai-provider-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ai-provider-card{border:1.5px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;background:var(--white);text-align:center}
+.ai-provider-card.sel{border-color:var(--blue);background:var(--info-bg)}
+.ai-provider-card.sel.no-ai{border-color:var(--ok);background:var(--ok-bg)}
+.ai-provider-name{font-size:12.5px;font-weight:600;color:var(--navy)}
+.ai-provider-desc{font-size:10.5px;color:var(--text-soft);margin-top:3px;line-height:1.4}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r);padding:26px;width:500px;max-width:92vw;box-shadow:var(--sh-md)}
+.modal-sm{width:380px}
+.modal-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:7px}
+.modal-desc{font-size:12.5px;color:var(--text-mid);margin-bottom:16px;line-height:1.55}
+.modal-btns{display:flex;gap:9px;margin-top:18px}
+.tab-row{display:flex;gap:4px;margin-bottom:16px;background:var(--surface);padding:4px;border-radius:8px}
+.tab{flex:1;padding:7px;border-radius:6px;border:none;background:transparent;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;color:var(--text-soft);transition:all .15s}
+.tab.active{background:var(--white);color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* Config page */
+.cfg-tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:2px solid var(--border)}
+.cfg-tab{padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-soft);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.cfg-tab:hover{color:var(--text)}
+.cfg-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.mod-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.mod-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mod-name{font-size:13.5px;font-weight:600;color:var(--navy)}
+.color-input-wrap{display:flex;align-items:center;gap:8px}
+.color-input-wrap input[type=color]{width:36px;height:32px;padding:2px;border:1px solid var(--border-mid);border-radius:var(--r-sm);cursor:pointer}
+.color-hex{font-size:12px;font-family:monospace;color:var(--text-mid)}
+.tpl-drop{border:1.5px dashed var(--border-mid);border-radius:var(--r);padding:24px;text-align:center;cursor:pointer;transition:all .15s;background:var(--white)}
+.tpl-drop:hover{border-color:var(--violet);background:rgba(124,58,237,.04)}
+.tpl-stored{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:12px}
+#toast{position:fixed;bottom:22px;right:22px;background:#1a1a2e;color:#fff;padding:11px 16px;border-radius:var(--r);font-size:12.5px;max-width:360px;z-index:9999;box-shadow:var(--sh-md);border-left:3px solid var(--danger);display:none}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.section-lbl{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-soft);margin:18px 0 9px}
+@media(max-width:768px){.sb{width:52px;min-width:52px}.sb-logo span,.sb-sub,.ni-txt,.ni-draft,.sb-btn span{display:none}.main{margin-left:52px}.content{padding:14px}.fr2,.fr3{grid-template-columns:1fr}.mrow{grid-template-columns:1fr 1fr}.gap-pair,.rpt-grid,.ai-provider-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-brand"><div class="sb-logo"><span>Anugal</span> IGA</div><div class="sb-sub">DISCOVERY PLATFORM</div></div>
+  <nav class="sb-nav" id="sb-nav"></nav>
+  <div class="sb-footer">
+    <button class="sb-btn" id="cfg-btn" onclick="goConfig()"><span style="font-size:14px">&#9881;</span><span>Configuration</span></button>
+    <button class="sb-btn" onclick="openAIModal()"><div class="ai-dot" id="ai-dot"></div><span id="ai-status-txt">AI not configured</span></button>
+  </div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="bc" id="bc"></div>
+    <div class="topbar-r">
+      <div class="save-indicator" id="save-ind" style="display:none"><div class="save-dot"></div><span>Saved</span></div>
+      <span id="sess-badge"></span>
+    </div>
+  </header>
+  <div class="content" id="content"></div>
+  <footer class="nav-footer" id="nav-footer" style="display:none">
+    <div class="nf-left">
+      <button class="btn" id="btn-back" onclick="prevStep()">&#8592; Back</button>
+      <button class="btn btn-outline-ok btn-sm" onclick="saveDraft()">&#128190; Save draft</button>
+    </div>
+    <div class="nf-right">
+      <button class="btn btn-primary btn-lg" id="btn-next" onclick="nextStep()">Continue &#8594;</button>
+    </div>
+  </footer>
+</div>
+
+<!-- AI MODAL -->
+<div class="modal-ov" id="ai-modal">
+  <div class="modal">
+    <div class="modal-title">AI configuration</div>
+    <div class="modal-desc">Choose your AI provider. Keys stored in browser only. "No AI" generates structured template reports from your discovery data.</div>
+    <div class="ai-provider-grid">
+      <div class="ai-provider-card" data-provider="anthropic" onclick="selProvider('anthropic')">
+        <div style="font-size:22px;margin-bottom:6px">&#128992;</div>
+        <div class="ai-provider-name">Claude (Anthropic)</div>
+        <div class="ai-provider-desc">claude-sonnet-4-20250514<br>Best for IGA analysis</div>
+      </div>
+      <div class="ai-provider-card" data-provider="openai" onclick="selProvider('openai')">
+        <div style="font-size:22px;margin-bottom:6px">&#128994;</div>
+        <div class="ai-provider-name">ChatGPT (OpenAI)</div>
+        <div class="ai-provider-desc">gpt-4o<br>Strong reasoning</div>
+      </div>
+      <div class="ai-provider-card no-ai" data-provider="none" onclick="selProvider('none')">
+        <div style="font-size:22px;margin-bottom:6px">&#128203;</div>
+        <div class="ai-provider-name">No AI</div>
+        <div class="ai-provider-desc">Template reports<br>No API key needed</div>
+      </div>
+    </div>
+    <div id="ai-key-section">
+      <div class="tab-row" id="ai-tabs">
+        <button class="tab active" data-tab="key" onclick="switchAITab('key')">API key</button>
+        <button class="tab" data-tab="info" onclick="switchAITab('info')">Where to get a key</button>
+      </div>
+      <div id="ai-tab-key"><div class="fg"><label class="fl" id="ai-key-label">Anthropic API key</label><input class="fi" type="password" id="ai-key-inp" placeholder="sk-ant-api03-..."></div></div>
+      <div id="ai-tab-info" style="display:none"><div class="alert alert-info"><strong>Anthropic / Claude:</strong> <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--blue)">console.anthropic.com</a> &#8594; API Keys &#8594; Create Key<br><br><strong>OpenAI / ChatGPT:</strong> <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue)">platform.openai.com</a> &#8594; API Keys &#8594; Create new secret key</div></div>
+    </div>
+    <div id="ai-nokey-section" style="display:none"><div class="alert alert-success">&#10003; Template mode — all reports generated from your discovery data, no API needed.</div></div>
+    <div class="modal-btns"><button class="btn btn-primary" onclick="saveAIConfig()">Save configuration</button><button class="btn" onclick="closeModal('ai-modal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-ov" id="del-modal">
+  <div class="modal modal-sm">
+    <div class="modal-title">Delete customer?</div>
+    <div style="font-size:12.5px;color:var(--text-mid);margin-top:8px;line-height:1.55">This will permanently delete <strong id="del-name"></strong> and all session data.</div>
+    <div class="modal-btns"><button class="btn btn-danger" onclick="confirmDel()">Delete</button><button class="btn" onclick="closeModal('del-modal')">Cancel</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══ CONSTANTS ═══ */
+const STEPS=[{l:'Customer setup'},{l:'Identity landscape'},{l:'Applications'},{l:'Critical apps'},{l:'Interview'},{l:'Documents'},{l:'Gap analysis'},{l:'Reports'}];
+const SQS=[
+  {id:'sq1',cat:'User lifecycle',q:'Walk us through onboarding a new employee — from HR confirmation to full system access.'},
+  {id:'sq2',cat:'User lifecycle',q:'What is the average time to fully provision a new joiner with all required access?'},
+  {id:'sq3',cat:'User lifecycle',q:'How is access changed when an employee moves to a different role or department?'},
+  {id:'sq4',cat:'Offboarding',q:'Describe your offboarding process. How long to revoke all access when someone exits?'},
+  {id:'sq5',cat:'Access request',q:'How do users request access? Is there a formal request and approval workflow?'},
+  {id:'sq6',cat:'Access certification',q:'How and when are access reviews conducted? Who reviews and approves?'},
+  {id:'sq7',cat:'Privileged access',q:'How is privileged/admin access managed and monitored across critical systems?'},
+  {id:'sq8',cat:'Role management',q:'How are roles defined and managed? Is there a formal RBAC or ABAC model?'},
+  {id:'sq9',cat:'Compliance',q:'Which regulations apply (SOX, HIPAA, GDPR, ISO 27001)? How do you demonstrate compliance?'},
+  {id:'sq10',cat:'Segregation of duties',q:'Are SoD policies defined? How are conflicts detected and resolved?'},
+  {id:'sq11',cat:'Automation',q:'What % of identity tasks are manual? What are the most time-consuming manual processes?'},
+  {id:'sq12',cat:'Integration',q:'How does your HR system integrate with identity management? Is provisioning automated?'}
+];
+const IAM=['Active Directory / LDAP','Azure AD / Entra ID','Okta','SailPoint IIQ','SAP GRC','Oracle IAM','CyberArk','BeyondTrust','ServiceNow','Saviynt','Manual / Spreadsheets','In-house built'];
+const INDUSTRIES=['Banking & financial services','Healthcare & life sciences','Manufacturing','Retail & e-commerce','Technology & IT services','Government & public sector','Insurance','Telecom','Energy & utilities','Education','Multimedia & entertainment','Media & publishing','Professional services','Legal services','Real estate & construction','Transportation & logistics','Automotive','Pharmaceutical & biotech','Mining & resources','Non-profit & NGO','Hospitality & tourism','Agriculture & food','Defence & aerospace'];
+const APP_TYPES=['ERP','HRMS','CRM','Finance','Collaboration','Cloud SaaS','Legacy / on-prem','Custom app','Database','Infrastructure'];
+const AUTH_METHODS=['Username / Password','SSO / SAML','MFA','LDAP / AD','API key','Certificate-based','No auth'];
+const SIZES=['< 500','500 - 2,000','2,000 - 10,000','10,000 - 50,000','> 50,000'];
+const MAT=['Initial','Developing','Defined','Managed','Optimized'];
+const SLABELS=['Customer','Landscape','Apps','Critical','Interview','Docs','Gap Analysis','Reports'];
+
+const DEFAULT_MODULES=[
+  {id:'m1',name:'JML Engine',shortName:'JML Engine',category:'Core',description:'Automates Joiner-Mover-Leaver workflows triggered from your HRMS. Eliminates manual provisioning and ensures instant deprovisioning.',benefits:['Real-time HRMS-triggered provisioning','Automated access revocation on exit','Role-based access assignment on join','Configurable multi-level approval workflows','Provisioning SLA dashboards and alerts']},
+  {id:'m2',name:'Access Certifications',shortName:'Access Certs',category:'Compliance',description:'Automates periodic access review campaigns. Eliminates spreadsheet-based certifications and provides audit-ready evidence.',benefits:['Automated certification campaign scheduling','Risk-based reviewer routing','One-click approve/revoke actions','Audit-ready evidence packaging','Campaign analytics and completion tracking']},
+  {id:'m3',name:'Role Manager',shortName:'Role Manager',category:'Governance',description:'Enterprise role catalogue with full lifecycle management. Enables RBAC governance with SoD conflict detection.',benefits:['Business role catalogue and ownership','Automatic role assignment and revocation','Segregation of duties conflict detection','Role mining from existing access data','Role lifecycle approval workflows']},
+  {id:'m4',name:'HR Connector',shortName:'HR Connector',category:'Integration',description:'Pre-built connectors to major HRMS platforms. Enables event-driven identity lifecycle from a single source of truth.',benefits:['Workday, SAP HCM, Oracle HCM connectors','Real-time HR event processing','Custom field mapping and transformation','Employee data synchronization','Contractor and contingent worker support']},
+  {id:'m5',name:'SSO & Federation',shortName:'SSO',category:'Access',description:'Centralized single sign-on and identity federation. Eliminates password sprawl and simplifies offboarding.',benefits:['SAML 2.0 and OIDC federation','MFA enforcement across all apps','Centralized session management','Social and enterprise identity federation','Passwordless authentication support']},
+  {id:'m6',name:'PAM Integration',shortName:'PAM',category:'Security',description:'Privileged access management integration. Enforces just-in-time access and session governance for admin accounts.',benefits:['Just-in-time privileged access requests','Session recording and monitoring','Privileged account vaulting','Admin access certification campaigns','Break-glass emergency access controls']},
+  {id:'m7',name:'Cloud IGA',shortName:'Cloud IGA',category:'Cloud',description:'Extends IGA governance to cloud applications. Enforces consistent access policies across on-premises and cloud.',benefits:['SCIM 2.0 provisioning for cloud apps','REST API connector framework','Cloud entitlement visibility','Multi-cloud policy enforcement','SaaS application discovery']},
+  {id:'m8',name:'Compliance Reporter',shortName:'Compliance',category:'Compliance',description:'Automated compliance reporting for SOX, ISO 27001, HIPAA, GDPR and other frameworks. Eliminates manual evidence collection.',benefits:['Pre-built SOX, ISO 27001, HIPAA templates','Automated evidence collection','Continuous compliance monitoring','Audit-ready report generation','Regulatory change notifications']},
+  {id:'m9',name:'Analytics & Risk',shortName:'Analytics',category:'Intelligence',description:'AI-powered identity risk scoring and access analytics. Identifies anomalies and excessive access across the enterprise.',benefits:['User behaviour analytics','Excess access identification','Peer group comparison analysis','Risk score dashboards','Anomaly detection and alerting']},
+  {id:'m10',name:'App Connectors',shortName:'Connectors',category:'Integration',description:'Library of pre-built connectors for 200+ enterprise applications. Rapid onboarding with zero custom development.',benefits:['200+ pre-built app connectors','SAP, Oracle, Salesforce, ServiceNow and more','Bi-directional synchronization','Delta sync and full reconciliation','Custom connector SDK']}
+];
+
+/* ═══ STATE ═══ */
+let VIEW='dashboard',CID=null,S=null,PDID=null,SAVE_T=null,CFGTAB='company';
+
+function fresh(){return{step:0,done:[],isDraft:false,lastSaved:null,c:{name:'',industry:'',size:'',website:'',cName:'',cEmail:'',cRole:'',logo:null,logoName:'',date:new Date().toISOString().split('T')[0],bg:''},l:{tools:[],customTool:'',totalUsers:'',totalIds:'',adDomains:'',cloudStr:'',challenges:'',maturity:2},apps:[],critIds:[],qs:JSON.parse(JSON.stringify(SQS)),ans:{},aiQDone:false,aiQLd:false,docs:[],gaps:null,gapLd:false,poRptDone:false,poRptLd:false,exRptDone:false,exRptLd:false};}
+
+function loadAll(){try{return JSON.parse(localStorage.getItem('anugal_v3')||'[]');}catch{return[];}}
+function saveAll(a){localStorage.setItem('anugal_v3',JSON.stringify(a));}
+function getC(id){return loadAll().find(c=>c.id===id)||null;}
+function upsertC(s){const all=loadAll(),idx=all.findIndex(c=>c.id===s.id),rec={...s,updatedAt:new Date().toISOString()};if(idx>-1)all[idx]=rec;else all.push({...rec,createdAt:new Date().toISOString()});saveAll(all);}
+function delC(id){saveAll(loadAll().filter(c=>c.id!==id));}
+function loadS(id){const c=getC(id);if(!c)return;S=c;if(!Array.isArray(S.done))S.done=[];if(!Array.isArray(S.critIds))S.critIds=[];if(!Array.isArray(S.docs))S.docs=[];}
+function saveS(silent){if(!S)return;S.lastSaved=new Date().toISOString();upsertC(S);if(!silent){const ind=$('save-ind');if(ind){ind.style.display='flex';clearTimeout(SAVE_T);SAVE_T=setTimeout(()=>ind.style.display='none',2500);}}}
+function saveDraft(){if(!S)return;S.isDraft=true;saveS();toast('Draft saved — Step '+(S.step+1)+': '+STEPS[S.step].l,'ok');}
+function stepProg(s){return Math.round(((s.done||[]).length/STEPS.length)*100);}
+
+/* ═══ ANUGAL CONFIG ═══ */
+let CFG={
+  companyName:'Anugal',tagline:'Identity Governance & Administration',website:'www.anugal.com',
+  contactEmail:'info@anugal.com',primaryColor:'#0d1b3e',accentColor:'#0891b2',
+  disclaimer:'This report is confidential and prepared solely for the named organization.',
+  footerText:'Anugal Identity Governance',reportPreparedBy:'Anugal Sales Engineering',
+  modules:JSON.parse(JSON.stringify(DEFAULT_MODULES)),
+  wordTemplate:null,wordTemplateName:'',wordTemplateUploaded:false
+};
+
+function loadCFG(){try{const r=localStorage.getItem('anugal_cfg');if(r){const p=JSON.parse(r);CFG={...CFG,...p};if(!CFG.modules||!CFG.modules.length)CFG.modules=JSON.parse(JSON.stringify(DEFAULT_MODULES));}}catch{}}
+function saveCFG(){localStorage.setItem('anugal_cfg',JSON.stringify(CFG));toast('Configuration saved','ok');}
+function getModule(name){return CFG.modules.find(m=>m.name===name||m.shortName===name)||null;}
+function moduleList(){return CFG.modules.map(m=>m.name).join(', ');}
+
+/* ═══ AI CONFIG ═══ */
+let AI={provider:'none',key:''};
+function loadAI(){try{const r=localStorage.getItem('anugal_ai_v2');if(r)AI=JSON.parse(r);}catch{}}
+function saveAI(){localStorage.setItem('anugal_ai_v2',JSON.stringify(AI));}
+function updateAIStatus(){const dot=$('ai-dot'),txt=$('ai-status-txt');if(AI.provider==='none'){dot.className='ai-dot warn';txt.textContent='Template mode';}else if(AI.key){dot.className='ai-dot ok';txt.textContent=AI.provider==='anthropic'?'Claude connected':'GPT-4o connected';}else{dot.className='ai-dot';txt.textContent='API key not set';}}
+function openAIModal(){selProvider(AI.provider||'anthropic',true);$('ai-key-inp').value=AI.key||'';$('ai-modal').classList.add('open');}
+function selProvider(p,silent){AI.provider=p;document.querySelectorAll('.ai-provider-card').forEach(c=>c.classList.toggle('sel',c.dataset.provider===p));const ks=$('ai-key-section'),ns=$('ai-nokey-section');if(p==='none'){ks.style.display='none';ns.style.display='block';}else{ks.style.display='block';ns.style.display='none';$('ai-key-label').textContent=p==='anthropic'?'Anthropic API key':'OpenAI API key';$('ai-key-inp').placeholder=p==='anthropic'?'sk-ant-api03-...':'sk-...';}}
+function switchAITab(t){document.querySelectorAll('#ai-tabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));$('ai-tab-key').style.display=t==='key'?'block':'none';$('ai-tab-info').style.display=t==='info'?'block':'none';}
+function saveAIConfig(){AI.key=$('ai-key-inp').value.trim();saveAI();closeModal('ai-modal');updateAIStatus();toast('AI configuration saved','ok');}
+
+async function callAI(prompt,mx=1500){
+  if(AI.provider==='none')throw new Error('Template mode active');
+  if(!AI.key)throw new Error('API key not set. Click the AI indicator in the sidebar.');
+  if(AI.provider==='anthropic'){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':AI.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:mx,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();if(d.error)throw new Error(d.error.message);return d.content[0].text;
+  }
+  const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI.key},body:JSON.stringify({model:'gpt-4o',max_tokens:mx,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);return d.choices[0].message.content;
+}
+function pj(t){return JSON.parse(t.replace(/```json[\s\S]*?```|```[\s\S]*?```/g,m=>m.replace(/```json|```/g,'')).trim());}
+const esc=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
+const $=id=>document.getElementById(id);
+const on=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
+function toast(msg,type='error'){const t=$('toast');t.textContent=msg;t.style.borderLeftColor=type==='ok'?'#10b981':'#dc2626';t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',4000);}
+function closeModal(id){$(id).classList.remove('open');}
+['ai-modal','del-modal'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',e=>{if(e.target===el)closeModal(id);});});
+
+/* ═══ ROUTING ═══ */
+function render(){
+  if(VIEW==='config')renderConfig();
+  else if(VIEW==='dashboard')renderDash();
+  else renderSess();
+}
+
+/* ═══ DASHBOARD ═══ */
+function renderDash(){
+  const all=loadAll();
+  $('cfg-btn').classList.remove('active-cfg');
+  $('sb-nav').innerHTML='<div class="ni active" style="margin-bottom:4px"><div class="ni-num" style="font-size:12px">&#9638;</div><div class="ni-txt">Dashboard</div></div>';
+  $('bc').innerHTML='<strong>Customer dashboard</strong>';$('sess-badge').innerHTML='';$('nav-footer').style.display='none';$('save-ind').style.display='none';
+  const done=all.filter(c=>c.gaps).length,inp=all.filter(c=>c.done&&c.done.length>0&&!c.gaps).length,draft=all.filter(c=>c.isDraft).length;
+  $('content').innerHTML=
+    '<div class="db-hdr"><div><div class="db-title">Customer engagements</div><div class="db-sub">'+all.length+' customer'+(all.length!==1?'s':'')+' &nbsp;&middot;&nbsp; '+done+' analysis complete &nbsp;&middot;&nbsp; '+inp+' in progress &nbsp;&middot;&nbsp; '+draft+' saved draft'+(draft!==1?'s':'')+'</div></div><button class="btn btn-primary btn-lg" onclick="newCustomer()">+ New customer</button></div>'+
+    (all.length>0?'<div class="mrow"><div class="mc"><div class="mv">'+all.length+'</div><div class="mk">Total engagements</div></div><div class="mc"><div class="mv" style="color:var(--ok)">'+done+'</div><div class="mk">Analysis complete</div></div><div class="mc"><div class="mv" style="color:var(--warn)">'+inp+'</div><div class="mk">In progress</div></div><div class="mc"><div class="mv" style="color:var(--blue)">'+draft+'</div><div class="mk">Saved drafts</div></div></div>':'')+
+    (all.length===0?'<div class="empty-state"><div class="empty-icon">&#127970;</div><div class="empty-title">No customers yet</div><div class="empty-desc">Start your first IGA discovery engagement.</div><button class="btn btn-primary btn-lg" onclick="newCustomer()">+ Add first customer</button></div>':
+    '<div class="cust-grid">'+all.map(c=>{
+      const st=statusOf(c),prog=stepProg(c),apps=(c.apps||[]).length,gaps=c.gaps?(c.gaps.gaps||[]).length:0,docs=(c.docs||[]).length,upd=c.updatedAt?new Date(c.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—',pc=prog>=80?'var(--ok)':prog>=40?'var(--blue)':'var(--text-soft)';
+      return '<div class="cc" onclick="openCustomer(\''+c.id+'\')">'+'<div style="position:absolute;top:10px;right:10px;display:flex;gap:4px;z-index:1" onclick="event.stopPropagation()">'+(c.isDraft?'<span class="badge b-orange" style="font-size:9px">Draft</span>':'')+'<button class="btn btn-ghost btn-sm" onclick="askDel(\''+c.id+'\',\''+esc(c.c&&c.c.name?c.c.name:'')+'\')">&#128465;</button></div>'+'<div style="margin-bottom:8px"><div class="cc-name">'+esc(c.c&&c.c.name?c.c.name:'Unnamed')+'</div><div class="cc-ind">'+esc(c.c&&c.c.industry?c.c.industry:'Industry not set')+'</div></div>'+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="badge '+st.cls+'">'+st.label+'</span><span style="font-size:11px;color:'+pc+';font-weight:500">'+prog+'%</span></div>'+'<div class="prog-bar"><div class="prog-fill" style="width:'+prog+'%;background:'+pc+'"></div></div>'+'<div class="cc-meta"><span>&#128230; '+apps+' app'+(apps!==1?'s':'')+'</span>'+(docs?'<span>&#128196; '+docs+' doc'+(docs!==1?'s':'')+'</span>':'')+(gaps?'<span>&#9888;&#65039; '+gaps+' gap'+(gaps!==1?'s':'')+'</span>':'')+'<span style="margin-left:auto">&#128336; '+upd+'</span></div></div>';
+    }).join('')+'</div>');
+}
+
+function statusOf(s){if(s.exRptDone||s.poRptDone)return{label:'Reports generated',cls:'b-violet'};if(s.gaps)return{label:'Analysis done',cls:'b-green'};if(s.isDraft)return{label:'Draft saved',cls:'b-orange'};if(s.done&&s.done.length>0)return{label:'In progress',cls:'b-blue'};return{label:'Not started',cls:'b-gray'};}
+function newCustomer(){const id='c'+Date.now();upsertC({id,...fresh()});openCustomer(id);}
+function openCustomer(id){VIEW='session';CID=id;loadS(id);renderSess();}
+function gotoDash(){if(S)saveS(true);VIEW='dashboard';CID=null;S=null;render();}
+function askDel(id,name){PDID=id;$('del-name').textContent=name||'this customer';$('del-modal').classList.add('open');}
+function confirmDel(){if(PDID){delC(PDID);if(S&&S.id===PDID){PDID=null;closeModal('del-modal');gotoDash();return;}}PDID=null;closeModal('del-modal');render();}
+
+/* ═══ CONFIG PAGE ═══ */
+function goConfig(){VIEW='config';CFGTAB='company';if(S)saveS(true);render();}
+
+function renderConfig(){
+  $('cfg-btn').classList.add('active-cfg');
+  $('sb-nav').innerHTML='<div class="ni" onclick="gotoDash()" style="margin-bottom:6px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.07)"><div class="ni-num" style="font-size:12px">&#8592;</div><div class="ni-txt">Dashboard</div></div>';
+  $('bc').innerHTML='<strong>&#9881; Configuration</strong>';$('sess-badge').innerHTML='';
+  $('nav-footer').style.display='none';$('save-ind').style.display='none';
+  $('content').innerHTML=cfgHtml();
+  bindCfgEvents();
+}
+
+function cfgHtml(){
+  const tabs=['company','modules','report','template'];
+  const tabLabels=['Company & Branding','Anugal Modules','Report Settings','Word Template'];
+  return '<div class="ph"><div class="ph-title">&#9881; Configuration</div><div class="ph-desc">Manage '+CFG.companyName+' branding, module details, report settings, and Word document templates.</div></div>'+
+  '<div class="cfg-tabs">'+tabs.map((t,i)=>'<button class="cfg-tab'+(CFGTAB===t?' active':'')+'" onclick="setCfgTab(\''+t+'\')">'+tabLabels[i]+'</button>').join('')+'</div>'+
+  (CFGTAB==='company'?cfgCompanyTab():CFGTAB==='modules'?cfgModulesTab():CFGTAB==='report'?cfgReportTab():cfgTemplateTab())+
+  '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px"><button class="btn btn-primary btn-lg" onclick="saveCFGForm()">&#10003; Save configuration</button><button class="btn" onclick="gotoDash()">Cancel</button></div>';
+}
+
+function cfgCompanyTab(){
+  return '<div class="card"><div class="card-title"><div class="ci">&#127970;</div>Company information</div>'+
+  '<div class="fr2"><div class="fg"><label class="fl">Company name</label><input class="fi" id="cfg-name" value="'+esc(CFG.companyName)+'" placeholder="Anugal"></div><div class="fg"><label class="fl">Tagline</label><input class="fi" id="cfg-tagline" value="'+esc(CFG.tagline)+'" placeholder="Identity Governance & Administration"></div></div>'+
+  '<div class="fr2"><div class="fg"><label class="fl">Website</label><input class="fi" id="cfg-website" value="'+esc(CFG.website)+'" placeholder="www.anugal.com"></div><div class="fg"><label class="fl">Contact email</label><input class="fi" id="cfg-email" value="'+esc(CFG.contactEmail)+'" placeholder="info@anugal.com"></div></div>'+
+  '<div class="fg"><label class="fl">Report prepared by</label><input class="fi" id="cfg-prepby" value="'+esc(CFG.reportPreparedBy)+'" placeholder="Anugal Sales Engineering" style="max-width:360px"></div></div>'+
+  '<div class="card"><div class="card-title"><div class="ci">&#127912;</div>Brand colours</div><div class="fr2">'+
+  '<div class="fg"><label class="fl">Primary colour (headings, cover)</label><div class="color-input-wrap"><input type="color" id="cfg-pri-color" value="'+CFG.primaryColor+'"><span class="color-hex" id="cfg-pri-hex">'+CFG.primaryColor+'</span></div></div>'+
+  '<div class="fg"><label class="fl">Accent colour (highlights, links)</label><div class="color-input-wrap"><input type="color" id="cfg-acc-color" value="'+CFG.accentColor+'"><span class="color-hex" id="cfg-acc-hex">'+CFG.accentColor+'</span></div></div>'+
+  '</div><div class="alert alert-info" style="margin-top:4px">These colours will be applied to the Word document headers, cover page, and callout boxes.</div></div>';
+}
+
+const MOD_CATEGORIES=['Core','Compliance','Governance','Integration','Access','Security','Cloud','Intelligence','Analytics','HR','Workflow','Reporting','Custom'];
+
+function cfgModulesTab(){
+  const cats=[...new Set(CFG.modules.map(m=>m.category))];
+  return '<div class="card">'+
+  '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
+  '<div class="card-title" style="margin-bottom:0"><div class="ci">&#128202;</div>Module catalogue <span class="badge b-blue" style="margin-left:4px">'+CFG.modules.length+'</span></div>'+
+  '<button class="btn btn-primary btn-sm" onclick="addModule()">+ Add module</button>'+
+  '</div>'+
+  '<div class="alert alert-info" style="margin-bottom:14px">Modules power the gap analysis and reports. Each module\'s name, description, and benefits are included in Word reports and used by AI to generate specific recommendations tailored to each customer.</div>'+
+  CFG.modules.map((m,i)=>{
+    const isCustom=!DEFAULT_MODULES.find(d=>d.id===m.id);
+    return '<div class="mod-card" id="mod-card-'+i+'">'+
+    '<div class="mod-hdr">'+
+    '<div style="display:flex;align-items:center;gap:8px">'+
+    '<div class="mod-name">'+esc(m.name)+'</div>'+
+    '<span class="badge b-blue">'+esc(m.category)+'</span>'+
+    (isCustom?'<span class="badge b-violet" style="font-size:9px">Custom</span>':'')+
+    '</div>'+
+    '<div style="display:flex;gap:5px">'+
+    (!isCustom?'<button class="btn btn-ghost btn-sm" onclick="resetModule('+i+')" title="Reset to default">&#8635; Reset</button>':'')+
+    '<button class="btn btn-danger btn-sm" onclick="deleteModule('+i+')" title="Delete module">&#128465;</button>'+
+    '</div></div>'+
+    '<div class="fr3" style="margin-bottom:8px">'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Module name *</label><input class="fi mod-name-inp" data-idx="'+i+'" value="'+esc(m.name)+'" placeholder="e.g. Identity Analytics"></div>'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Short name</label><input class="fi mod-short-inp" data-idx="'+i+'" value="'+esc(m.shortName)+'" placeholder="e.g. Analytics"></div>'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Category</label>'+
+    '<select class="fs mod-cat-inp" data-idx="'+i+'">'+
+    MOD_CATEGORIES.map(c=>'<option value="'+c+'"'+(m.category===c?' selected':'')+'>'+c+'</option>').join('')+
+    '</select></div></div>'+
+    '<div class="fr2" style="margin-bottom:8px">'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Description <span style="color:var(--text-soft);font-weight:400">(shown in reports)</span></label><textarea class="fta mod-desc-inp" data-idx="'+i+'" style="min-height:64px">'+esc(m.description)+'</textarea></div>'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Key benefits <span style="color:var(--text-soft);font-weight:400">(one per line — included in Word doc)</span></label><textarea class="fta mod-ben-inp" data-idx="'+i+'" style="min-height:64px">'+m.benefits.join('\n')+'</textarea></div>'+
+    '</div>'+
+    '<div class="fg" style="margin-bottom:0"><label class="fl">Industry relevance <span style="color:var(--text-soft);font-weight:400">(comma-separated — leave blank for all industries)</span></label>'+
+    '<input class="fi mod-ind-inp" data-idx="'+i+'" value="'+esc((m.industries||[]).join(', '))+'" placeholder="e.g. Banking, Healthcare, Manufacturing — or leave blank for all"></div>'+
+    '<div class="fg" style="margin-bottom:0;margin-top:8px"><label class="fl">Gap patterns this module addresses <span style="color:var(--text-soft);font-weight:400">(one per line — used by AI and template gap analysis)</span></label>'+
+    '<textarea class="fta mod-gap-inp" data-idx="'+i+'" style="min-height:56px" placeholder="e.g. Manual provisioning delays&#10;Orphaned accounts after offboarding&#10;No access certification process">'+esc((m.gapPatterns||[]).join('\n'))+'</textarea></div>'+
+    '</div>';
+  }).join('')+
+  '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">'+
+  '<button class="btn btn-primary" onclick="addModule()">+ Add new module</button>'+
+  '</div></div>';
+}
+
+function addModule(){
+  saveCFGFormSilent();
+  CFG.modules.push({
+    id:'custom_'+Date.now(),
+    name:'New Module',shortName:'Module',category:'Custom',
+    description:'Describe what this module does and the value it delivers.',
+    benefits:['Benefit 1','Benefit 2','Benefit 3'],
+    industries:[],gapPatterns:[]
+  });
+  CFGTAB='modules';
+  renderConfig();
+  // Scroll to bottom to show new module
+  setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),100);
+}
+
+function deleteModule(i){
+  saveCFGFormSilent();
+  if(CFG.modules.length<=1){toast('Must keep at least one module');return;}
+  if(!confirm('Delete module "'+CFG.modules[i].name+'"?'))return;
+  CFG.modules.splice(i,1);
+  CFGTAB='modules';
+  renderConfig();
+}
+
+function saveCFGFormSilent(){
+  // Save current form state without toast
+  if($('cfg-name'))CFG.companyName=$('cfg-name').value.trim()||'Anugal';
+  if($('cfg-tagline'))CFG.tagline=$('cfg-tagline').value.trim();
+  if($('cfg-website'))CFG.website=$('cfg-website').value.trim();
+  if($('cfg-email'))CFG.contactEmail=$('cfg-email').value.trim();
+  if($('cfg-prepby'))CFG.reportPreparedBy=$('cfg-prepby').value.trim();
+  if($('cfg-pri-color'))CFG.primaryColor=$('cfg-pri-color').value;
+  if($('cfg-acc-color'))CFG.accentColor=$('cfg-acc-color').value;
+  if($('cfg-disclaimer'))CFG.disclaimer=$('cfg-disclaimer').value.trim();
+  if($('cfg-footer'))CFG.footerText=$('cfg-footer').value.trim();
+  document.querySelectorAll('.mod-name-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].name=el.value.trim();});
+  document.querySelectorAll('.mod-short-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].shortName=el.value.trim();});
+  document.querySelectorAll('.mod-cat-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].category=el.value;});
+  document.querySelectorAll('.mod-desc-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].description=el.value.trim();});
+  document.querySelectorAll('.mod-ben-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].benefits=el.value.split('\n').filter(b=>b.trim());});
+  document.querySelectorAll('.mod-ind-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].industries=el.value.split(',').map(s=>s.trim()).filter(Boolean);});
+  document.querySelectorAll('.mod-gap-inp').forEach(el=>{const i=parseInt(el.dataset.idx);if(CFG.modules[i])CFG.modules[i].gapPatterns=el.value.split('\n').filter(b=>b.trim());});
+  localStorage.setItem('anugal_cfg',JSON.stringify(CFG));
+}
+
+function cfgReportTab(){
+  return '<div class="card"><div class="card-title"><div class="ci">&#128196;</div>Report settings</div>'+
+  '<div class="fg"><label class="fl">Confidentiality disclaimer</label><textarea class="fta" id="cfg-disclaimer" style="min-height:60px">'+esc(CFG.disclaimer)+'</textarea></div>'+
+  '<div class="fg"><label class="fl">Footer text</label><input class="fi" id="cfg-footer" value="'+esc(CFG.footerText)+'" placeholder="Anugal Identity Governance"></div>'+
+  '</div>'+
+  '<div class="card"><div class="card-title"><div class="ci">&#128196;</div>Report preview (Word format)</div>'+
+  '<div class="alert alert-info">Word documents use A4 page size (21cm × 29.7cm) with 2.54cm margins. Tables are fixed-width to prevent overflow. Font: Calibri 11pt.</div>'+
+  '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;font-size:12px;color:var(--text-mid);line-height:1.6">'+
+  '<strong style="color:var(--navy)">Cover page:</strong> Logo + Customer name + Report type + Metadata table<br>'+
+  '<strong style="color:var(--navy)">Body:</strong> H2 section headings with '+CFG.primaryColor+' underline &nbsp;|&nbsp; Fixed tables with column widths &nbsp;|&nbsp; Callout boxes<br>'+
+  '<strong style="color:var(--navy)">Footer:</strong> '+esc(CFG.footerText)+' &nbsp;|&nbsp; Customer name &nbsp;|&nbsp; Date'+
+  '</div></div>';
+}
+
+function cfgTemplateTab(){
+  return '<div class="card"><div class="card-title"><div class="ci">&#128196;</div>Word template</div>'+
+  '<div class="alert alert-info">Upload a <strong>.docx</strong> Word template. The template\'s cover page, header and footer will be used as the base for generated reports. Your discovery data and gap analysis will be inserted into the template body.</div>'+
+  (CFG.wordTemplateUploaded?
+    '<div class="tpl-stored"><span style="font-size:22px">&#128196;</span><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--navy)">'+esc(CFG.wordTemplateName)+'</div><div style="font-size:11.5px;color:var(--text-soft);margin-top:2px">Template uploaded &amp; stored</div></div><button class="btn btn-danger btn-sm" onclick="removeTpl()">Remove</button></div>'+
+    '<div class="alert alert-success" style="margin-top:10px">&#10003; When generating reports, click <strong>Use template</strong> to apply this template as the document base.</div>'
+  :
+    '<div class="tpl-drop" onclick="$(\'tpl-inp\').click()" ondragover="event.preventDefault();this.style.borderColor=\'var(--violet)\'" ondragleave="this.style.borderColor=\'\'" ondrop="handleTplDrop(event)">'+
+    '<div style="font-size:32px;margin-bottom:10px">&#128196;</div>'+
+    '<div style="font-size:13px;font-weight:500;color:var(--text-mid);margin-bottom:4px">Drop your .docx template here or click to browse</div>'+
+    '<div style="font-size:11px;color:var(--text-soft)">Microsoft Word document (.docx) — template styles, cover page and headers will be applied</div>'+
+    '</div>'
+  )+
+  '<input type="file" id="tpl-inp" accept=".docx" style="display:none" onchange="handleTplUpload(event)">'+
+  '</div>'+
+  '<div class="card"><div class="card-title"><div class="ci">&#128161;</div>Template guidance</div>'+
+  '<div class="fr2"><div>'+
+  '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">What makes a good template</div>'+
+  '<ul class="checklist">'+['Include your company logo and cover page','Set your brand colours in Word Themes','Add a professional header with company name','Include a footer with page numbers','Use Calibri or Arial font throughout'].map(i=>'<li>'+i+'</li>').join('')+'</ul>'+
+  '</div><div>'+
+  '<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">How it works</div>'+
+  '<ul class="checklist">'+['Upload your .docx template file','Template is stored in your browser','Click "Use template" when generating reports','Report content is inserted after the cover page','All data, tables and findings are included'].map(i=>'<li>'+i+'</li>').join('')+'</ul>'+
+  '</div></div></div>';
+}
+
+function setCfgTab(t){CFGTAB=t;renderConfig();}
+function resetModule(i){
+  const def=DEFAULT_MODULES.find(d=>d.id===CFG.modules[i].id)||DEFAULT_MODULES[i%DEFAULT_MODULES.length];
+  if(def)CFG.modules[i]=JSON.parse(JSON.stringify(def));
+  renderConfig();
+}
+function removeTpl(){CFG.wordTemplate=null;CFG.wordTemplateName='';CFG.wordTemplateUploaded=false;renderConfig();}
+function handleTplDrop(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f)uploadTpl(f);}
+function handleTplUpload(e){const f=e.target.files[0];if(f)uploadTpl(f);}
+function uploadTpl(file){
+  if(!file.name.endsWith('.docx')){toast('Please upload a .docx file');return;}
+  if(file.size>10*1024*1024){toast('File too large — max 10MB');return;}
+  const r=new FileReader();
+  r.onload=ev=>{CFG.wordTemplate=ev.target.result;CFG.wordTemplateName=file.name;CFG.wordTemplateUploaded=true;renderConfig();toast('Template uploaded: '+file.name,'ok');};
+  r.readAsDataURL(file);
+}
+
+function saveCFGForm(){
+  saveCFGFormSilent();
+  saveCFG();
+  renderConfig();
+}
+function bindCfgEvents(){
+  ['cfg-pri-color','cfg-acc-color'].forEach(id=>{on(id,'input',e=>{const hex=id==='cfg-pri-color'?'cfg-pri-hex':'cfg-acc-hex';const hel=$(hex);if(hel)hel.textContent=e.target.value;});});
+}
+
+/* ═══ SESSION ═══ */
+function renderSess(){
+  if(!S)return gotoDash();
+  $('cfg-btn').classList.remove('active-cfg');
+  renderSbNav();
+  const fns=[s0,s1,s2,s3,s4,s5,s6,s7];
+  $('content').innerHTML=spBar()+fns[S.step]();
+  bindEv();
+  $('nav-footer').style.display='flex';
+  $('btn-back').style.visibility=S.step===0?'hidden':'visible';
+  $('btn-next').style.display=S.step===7?'none':'inline-flex';
+  const nm=S.c&&S.c.name?S.c.name:'';
+  $('bc').innerHTML='<a href="#" onclick="gotoDash();return false">Customers</a> &rsaquo; <strong>'+esc(nm||'New customer')+'</strong> &rsaquo; '+STEPS[S.step].l;
+  $('sess-badge').className='sess-badge';$('sess-badge').textContent=nm||'New session';
+  $('save-ind').style.display='none';window.scrollTo(0,0);
+}
+function renderContent(){const fns=[s0,s1,s2,s3,s4,s5,s6,s7];$('content').innerHTML=spBar()+fns[S.step]();bindEv();}
+function renderSbNav(){
+  $('sb-nav').innerHTML='<div class="ni" onclick="gotoDash()" style="margin-bottom:6px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.07)"><div class="ni-num" style="font-size:12px">&#8592;</div><div class="ni-txt">All customers</div></div>'+
+  STEPS.map((st,i)=>{const cls=i===S.step?'active':S.done.includes(i)?'done':'';const ic=S.done.includes(i)?'&#10003;':i+1;return '<div class="ni '+cls+'" onclick="goStep('+i+')"><div class="ni-num">'+ic+'</div><div class="ni-txt">'+st.l+'</div>'+(S.isDraft&&i===S.step?'<div class="ni-draft"></div>':'')+'</div>';}).join('');
+}
+function spBar(){return '<div class="step-prog">'+STEPS.map((st,i)=>{const cls=i===S.step?'active':S.done.includes(i)?'done':'';const ic=S.done.includes(i)?'&#10003;':i+1;return '<div class="sp-item '+cls+'"><div class="sp-circle">'+ic+'</div><div class="sp-label">'+SLABELS[i]+'</div></div>';}).join('')+'</div>';}
+function goStep(n){saveS(true);S.step=n;renderSess();}
+function nextStep(){if(S.step<7){if(!S.done.includes(S.step))S.done.push(S.step);S.step++;saveS();renderSess();}}
+function prevStep(){if(S.step>0){S.step--;renderSess();}}
+</script>
+
+<script>
+function s0(){const c=S.c;return '<div class="ph"><div class="ph-title">Customer onboarding</div><div class="ph-desc">Set up the customer profile for this IGA discovery engagement.</div></div><div class="card"><div class="card-title"><div class="ci">&#127970;</div>Organization details</div><div class="fr2"><div class="fg"><label class="fl">Customer name *</label><input class="fi" id="f-name" value="'+esc(c.name)+'" placeholder="e.g. Acme Corporation"></div><div class="fg"><label class="fl">Industry</label><select class="fs" id="f-ind"><option value="">Select industry</option>'+INDUSTRIES.map(i=>'<option value="'+i+'"'+(c.industry===i?' selected':'')+'>'+i+'</option>').join('')+'</select></div></div><div class="fr2"><div class="fg"><label class="fl">Organization size</label><select class="fs" id="f-size"><option value="">Select</option>'+SIZES.map(s=>'<option value="'+s+'"'+(c.size===s?' selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="fg"><label class="fl">Website</label><input class="fi" id="f-web" value="'+esc(c.website)+'" placeholder="www.example.com"></div></div><div class="fg"><label class="fl">Organization background</label><textarea class="fta" id="f-bg" placeholder="Brief context for this IGA engagement...">'+esc(c.bg)+'</textarea></div></div><div class="card"><div class="card-title"><div class="ci">&#128100;</div>Primary contact</div><div class="fr3"><div class="fg"><label class="fl">Contact name</label><input class="fi" id="f-cn" value="'+esc(c.cName)+'" placeholder="Full name"></div><div class="fg"><label class="fl">Email</label><input class="fi" id="f-ce" type="email" value="'+esc(c.cEmail)+'" placeholder="email@company.com"></div><div class="fg"><label class="fl">Role / title</label><input class="fi" id="f-cr" value="'+esc(c.cRole)+'" placeholder="e.g. CISO, IT Director"></div></div></div><div class="card"><div class="card-title"><div class="ci">&#127912;</div>Branding &amp; session</div><div style="display:flex;gap:20px;align-items:flex-start"><div><label class="fl">Logo</label><div class="logo-box" onclick="$(\'logo-inp\').click()">'+( c.logo?'<img src="'+c.logo+'" alt="logo">'  :'<div class="logo-ph">Click to<br>upload logo</div>')+'</div><input type="file" id="logo-inp" accept="image/*" style="display:none">'+(c.logoName?'<div style="font-size:10px;color:var(--text-soft);margin-top:3px">'+esc(c.logoName)+'</div>':'')+'</div><div style="flex:1"><div class="fg"><label class="fl">Session date</label><input class="fi" id="f-date" type="date" value="'+c.date+'" style="max-width:190px"></div></div></div></div>';}
+
+function s1(){const l=S.l;return '<div class="ph"><div class="ph-title">Identity landscape</div><div class="ph-desc">Document current IAM tools, environment metrics, and maturity.</div></div><div class="card"><div class="card-title"><div class="ci">&#128295;</div>Current IAM tools &amp; platforms</div><div class="chip-grid">'+IAM.map(t=>'<div class="chip'+(l.tools.includes(t)?' sel':'')+'" onclick="toggleTool(this,\''+esc(t)+'\')">'+t+'</div>').join('')+'</div><div class="fg" style="margin-top:11px"><label class="fl">Other tools</label><input class="fi" id="f-ctool" value="'+esc(l.customTool)+'" placeholder="Other tools..." style="max-width:380px"></div></div><div class="card"><div class="card-title"><div class="ci">&#128202;</div>Identity metrics</div><div class="fr3"><div class="fg"><label class="fl">Total employees / users</label><input class="fi" id="f-tu" value="'+esc(l.totalUsers)+'" placeholder="e.g. 5,000"></div><div class="fg"><label class="fl">Total digital identities</label><input class="fi" id="f-ti" value="'+esc(l.totalIds)+'" placeholder="e.g. 12,000"></div><div class="fg"><label class="fl">AD domains / forests</label><input class="fi" id="f-ad" value="'+esc(l.adDomains)+'" placeholder="e.g. 3"></div></div><div class="fg"><label class="fl">Cloud strategy</label><select class="fs" id="f-cs" style="max-width:320px"><option value="">Select</option>'+['Cloud-first (>70% cloud)','Hybrid (mixed cloud & on-prem)','Mostly on-premises (<30% cloud)','Migrating to cloud'].map(o=>'<option value="'+o+'"'+(l.cloudStr===o?' selected':'')+'>'+o+'</option>').join('')+'</select></div></div><div class="card"><div class="card-title"><div class="ci">&#128202;</div>Self-assessed IAM maturity</div><input type="range" min="1" max="5" value="'+l.maturity+'" id="f-mat"><div class="mat-track">'+MAT.map((m,i)=>'<span>'+(i+1)+' — '+m+'</span>').join('')+'</div><div style="text-align:center;margin-top:10px" id="mat-disp"><span class="badge b-blue">Level '+l.maturity+' — '+MAT[l.maturity-1]+'</span></div></div><div class="card"><div class="card-title"><div class="ci">&#9889;</div>Known challenges</div><textarea class="fta" id="f-ch" placeholder="Main identity-related challenges...">'+esc(l.challenges)+'</textarea></div>';}
+
+function s2(){return '<div class="ph"><div class="ph-title">Application landscape</div><div class="ph-desc">Add all applications in scope.</div></div><div class="card"><div class="card-title"><div class="ci">&#10133;</div>Add application</div><div class="fr2"><div class="fg"><label class="fl">Application name *</label><input class="fi" id="na-name" placeholder="e.g. SAP ECC, Salesforce, Workday..."></div><div class="fg"><label class="fl">Type</label><select class="fs" id="na-type">'+APP_TYPES.map(t=>'<option>'+t+'</option>').join('')+'</select></div></div><div class="fr3"><div class="fg"><label class="fl">No. of users</label><input class="fi" id="na-users" type="number" placeholder="500"></div><div class="fg"><label class="fl">Auth method</label><select class="fs" id="na-auth">'+AUTH_METHODS.map(m=>'<option>'+m+'</option>').join('')+'</select></div><div class="fg"><label class="fl">Department</label><input class="fi" id="na-dept" placeholder="e.g. Finance, HR"></div></div><div class="fg"><label class="fl">Notes / compliance scope</label><input class="fi" id="na-notes" placeholder="Compliance requirements, known issues..."></div><button class="btn btn-primary" onclick="addApp()">+ Add application</button></div>'+(S.apps.length===0?'<div class="card" style="text-align:center;padding:32px;color:var(--text-soft)">No applications added yet.</div>':'<div class="card" style="padding:0;overflow:hidden"><table class="tbl"><thead><tr><th style="padding-left:14px">Application</th><th>Type</th><th>Users</th><th>Auth</th><th>Department</th><th></th></tr></thead><tbody>'+S.apps.map(a=>'<tr><td style="padding-left:14px;font-weight:500">'+esc(a.name)+'</td><td><span class="badge b-blue">'+esc(a.type)+'</span></td><td>'+esc(a.users||'—')+'</td><td>'+esc(a.auth)+'</td><td>'+esc(a.dept||'—')+'</td><td style="padding-right:10px"><button class="btn btn-danger btn-sm" onclick="removeApp(\''+a.id+'\')">Remove</button></td></tr>').join('')+'</tbody></table></div><div style="font-size:11.5px;color:var(--text-soft);margin-top:5px">'+S.apps.length+' app'+(S.apps.length!==1?'s':'')+' added</div>');}
+
+function s3(){if(!S.apps.length)return '<div class="card" style="text-align:center;padding:32px;color:var(--text-soft)">No applications added. Go back to Step 3.</div>';return '<div class="ph"><div class="ph-title">Critical applications</div><div class="ph-desc">Mark apps that are business-critical, hold sensitive data, or are in compliance scope.</div></div><div class="alert alert-info">Critical apps receive individual gap assessments in the Product Owner report.</div><div class="app-grid">'+S.apps.map(a=>'<div class="app-card'+(S.critIds.includes(a.id)?' crit':'')+'" onclick="toggleCrit(\''+a.id+'\')"><div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="badge b-blue" style="font-size:9.5px">'+esc(a.type)+'</span><span style="font-size:15px">'+(S.critIds.includes(a.id)?'&#10003;':'')+'</span></div><div style="font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:3px">'+esc(a.name)+'</div><div style="font-size:10.5px;color:var(--text-soft)">'+(a.users||'?')+' users &middot; '+esc(a.auth)+'</div>'+(a.dept?'<div style="font-size:10.5px;color:var(--text-soft);margin-top:1px">'+esc(a.dept)+'</div>':'')+'</div>').join('')+'</div><div style="margin-top:12px;font-size:12.5px;color:var(--text-mid);font-weight:500">'+S.critIds.length+' critical app'+(S.critIds.length!==1?'s':'')+' selected</div>';}
+
+function s4(){const aiQs=S.qs.filter(q=>q.isAI),hasAI=AI.provider!=='none';return '<div class="ph"><div class="ph-title">Stakeholder interview</div><div class="ph-desc">Record responses to IGA best-practice questions.'+(hasAI?' Generate AI follow-up questions tailored to this customer.':'')+'</div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-size:12.5px;color:var(--text-mid)"><strong>'+S.qs.filter(q=>!q.isAI).length+'</strong> standard &nbsp;&middot;&nbsp; <strong>'+aiQs.length+'</strong> AI-generated</div><button class="btn btn-primary" onclick="genAIQs()" '+(S.aiQLd||!hasAI?'disabled':'')+'>'+( S.aiQLd?'<span class="spin"></span><span class="pulse">Generating...</span>':S.aiQDone?'&#8635; Regenerate AI questions':'&#10022; Generate AI questions')+'</button></div>'+(!hasAI?'<div class="alert alert-info">AI disabled — answer questions manually. Reports will be generated from your responses.</div>':'')+(S.aiQLd?'<div class="alert alert-info">Generating targeted follow-up questions...</div>':'')+S.qs.map(q=>'<div class="qcard'+(q.isAI?' ai-q':'')+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="qcat">'+esc(q.cat)+'</span>'+(q.isAI?'<span class="badge b-blue" style="font-size:9.5px">AI generated</span>':'')+'</div><div class="qtxt">'+esc(q.q)+'</div><textarea class="fta" style="min-height:56px" placeholder="Stakeholder response..." oninput="S.ans[\''+q.id+'\']=this.value">'+esc(S.ans[q.id]||'')+'</textarea></div>').join('');}
+
+function s5(){
+  const docs=S.docs||[],sop=docs.filter(d=>d.type==='sop'),arch=docs.filter(d=>d.type==='arch');
+  return '<div class="ph"><div class="ph-title">Upload documents</div><div class="ph-desc">Upload application SOPs and architecture documents to enrich gap analysis.</div></div>'+
+  '<div class="fr2"><div>'+
+  '<div style="font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px">&#128196; Application SOPs <span class="badge b-blue">'+sop.length+'</span></div>'+
+  '<div class="doc-drop" id="sop-drop" onclick="$(\'sop-inp\').click()" ondragover="dragOver(event,\'sop-drop\')" ondragleave="dragLeave(\'sop-drop\')" ondrop="dropFile(event,\'sop\')"><div style="font-size:26px;margin-bottom:7px">&#128196;</div><div style="font-size:12.5px;color:var(--text-mid);margin-bottom:3px">Drop SOP documents here or click to browse</div><div style="font-size:10.5px;color:var(--text-soft)">PDF, DOCX, TXT — up to 10MB each</div></div>'+
+  '<input type="file" id="sop-inp" accept=".pdf,.docx,.txt,.md" multiple style="display:none" onchange="handleFiles(event,\'sop\')">'+
+  '<div style="margin-top:8px">'+sop.map(d=>docRow(d)).join('')+'</div></div>'+
+  '<div>'+
+  '<div style="font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px">&#127758; Architecture documents <span class="badge b-navy">'+arch.length+'</span></div>'+
+  '<div class="doc-drop" id="arch-drop" onclick="$(\'arch-inp\').click()" ondragover="dragOver(event,\'arch-drop\')" ondragleave="dragLeave(\'arch-drop\')" ondrop="dropFile(event,\'arch\')"><div style="font-size:26px;margin-bottom:7px">&#127758;</div><div style="font-size:12.5px;color:var(--text-mid);margin-bottom:3px">Drop architecture docs here or click to browse</div><div style="font-size:10.5px;color:var(--text-soft)">PDF, DOCX, TXT, PNG, JPG — diagrams welcome</div></div>'+
+  '<input type="file" id="arch-inp" accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg" multiple style="display:none" onchange="handleFiles(event,\'arch\')">'+
+  '<div style="margin-top:8px">'+arch.map(d=>docRow(d)).join('')+'</div></div></div>'+
+  (docs.length>0?'<div class="alert alert-success" style="margin-top:8px">&#10003; '+docs.length+' document'+(docs.length!==1?'s':'')+' uploaded — content will be included in gap analysis.</div>':'<div class="alert alert-info" style="margin-top:8px">Documents are optional. Upload SOPs and architecture diagrams for document-specific gap findings.</div>');
+}
+function docRow(d){return '<div class="doc-file"><span style="font-size:16px">&#128196;</span><span class="doc-file-name">'+esc(d.name)+'</span><span class="doc-file-size">'+fSize(d.size)+'</span><span style="font-size:11px;color:var(--ok)">&#10003;</span><button class="btn btn-ghost btn-sm" onclick="removeDoc(\''+d.id+'\')" style="margin-left:auto;padding:2px 6px">&#215;</button></div>';}
+function fSize(b){if(!b)return'';if(b<1024)return b+'B';if(b<1048576)return Math.round(b/1024)+'KB';return(b/1048576).toFixed(1)+'MB';}
+function dragOver(e,id){e.preventDefault();$(id)&&$(id).classList.add('drag');}
+function dragLeave(id){$(id)&&$(id).classList.remove('drag');}
+function dropFile(e,type){e.preventDefault();$(type+'-drop')&&$(type+'-drop').classList.remove('drag');handleFilesRaw(e.dataTransfer.files,type);}
+function handleFiles(e,type){handleFilesRaw(e.target.files,type);}
+function handleFilesRaw(files,type){Array.from(files).forEach(file=>{if(file.size>10*1024*1024){toast('File too large: '+file.name);return;}const id='d'+Date.now()+Math.random().toString(36).slice(2,6);const reader=new FileReader();reader.onload=ev=>{S.docs=S.docs||[];S.docs.push({id,name:file.name,size:file.size,type,mimeType:file.type,isImage:file.type.startsWith('image/'),content:ev.target.result});saveS();renderContent();};file.type.startsWith('image/')||file.name.endsWith('.pdf')?reader.readAsDataURL(file):reader.readAsText(file);});}
+function removeDoc(id){S.docs=(S.docs||[]).filter(d=>d.id!==id);saveS();renderContent();}
+
+function s6(){
+  const answered=Object.keys(S.ans).filter(id=>S.ans[id]&&S.ans[id].trim()).length,docs=S.docs||[],hasAI=AI.provider!=='none';
+  if(!S.gaps){
+    return '<div class="ph"><div class="ph-title">Gap analysis</div><div class="ph-desc">Analyse discovery responses'+(docs.length?' and '+docs.length+' uploaded document'+(docs.length!==1?'s':''):'')+' against IGA best practices.</div></div>'+
+    '<div class="mrow"><div class="mc"><div class="mv">'+answered+'</div><div class="mk">Q&amp;A answers</div></div><div class="mc"><div class="mv">'+S.apps.length+'</div><div class="mk">Applications</div></div><div class="mc"><div class="mv">'+docs.length+'</div><div class="mk">Documents</div></div><div class="mc"><div class="mv">'+S.l.maturity+'/5</div><div class="mk">Maturity</div></div></div>'+
+    '<div class="'+(hasAI?'fr2':'')+'">'+
+    (hasAI?'<div class="card" style="text-align:center;padding:26px"><div style="font-size:30px;margin-bottom:9px">&#129302;</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:5px">AI-powered analysis</div><div style="font-size:12px;color:var(--text-soft);margin-bottom:18px">Uses '+(AI.provider==='anthropic'?'Claude':'GPT-4o')+' to generate insights from responses'+(docs.length?' and documents':'')+'</div><button class="btn btn-primary btn-lg" onclick="genGaps()" '+(S.gapLd?'disabled':'')+' style="width:100%;justify-content:center">'+(S.gapLd?'<span class="spin"></span><span class="pulse">Analysing...</span>':'&#10022; Generate AI gap analysis')+'</button></div>':'')+
+    '<div class="card" style="text-align:center;padding:26px"><div style="font-size:30px;margin-bottom:9px">&#128202;</div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:5px">Template analysis</div><div style="font-size:12px;color:var(--text-soft);margin-bottom:18px">Structured gap analysis from your data — no AI required</div><button class="btn btn-ok btn-lg" onclick="genTemplate()" '+(S.gapLd||answered<1?'disabled':'')+' style="width:100%;justify-content:center">'+(S.gapLd?'<span class="spin"></span><span class="pulse">Building...</span>':'&#128202; Generate template analysis')+'</button></div>'+
+    '</div>';
+  }
+  const g=S.gaps,ic={High:'b-red',Medium:'b-orange',Low:'b-green'};
+  return '<div class="ph"><div class="ph-title">Gap analysis results</div><div class="ph-desc">Generated from '+answered+' responses'+(g.fromDocs?' and '+docs.length+' document'+(docs.length!==1?'s':''):'')+'.'+(g.isTemplate?' <span class="badge b-gray" style="font-size:9.5px">Template</span>':' <span class="badge b-violet" style="font-size:9.5px">AI-generated</span>')+'</div></div>'+
+  '<div class="mrow"><div class="mc"><div class="mv">'+g.maturityScore+'/5</div><div class="mk">IAM maturity</div><div class="ms">'+esc(g.maturityLabel)+'</div></div><div class="mc"><div class="mv">'+g.gaps.length+'</div><div class="mk">Gaps identified</div></div><div class="mc"><div class="mv" style="color:var(--danger)">'+g.gaps.filter(x=>x.impact==='High').length+'</div><div class="mk">High impact</div></div><div class="mc"><div class="mv">'+g.gaps.filter(x=>x.impact==='Low').length+'</div><div class="mk">Low impact</div></div></div>'+
+  '<div class="card" style="background:var(--surface2);border-color:rgba(37,99,235,.12)"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-soft);margin-bottom:6px">Executive summary</div><div style="font-size:13.5px;line-height:1.7">'+esc(g.summary)+'</div></div>'+
+  (g.docInsights?'<div class="card" style="background:rgba(124,58,237,.04);border-color:rgba(124,58,237,.18)"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--violet);margin-bottom:5px">&#128196; Document insights</div><div style="font-size:12.5px;line-height:1.6;color:var(--text-mid)">'+esc(g.docInsights)+'</div></div>':'')+
+  '<div class="section-lbl">Gaps identified</div>'+
+  g.gaps.map(gap=>'<div class="gap-card"><div class="gap-hdr"><div class="gap-area">'+esc(gap.area)+'</div><div style="display:flex;align-items:center;gap:5px"><span class="badge '+(ic[gap.impact]||'b-blue')+'">'+gap.impact+' impact</span>'+(gap.fromDoc?'<span class="badge b-violet" style="font-size:9.5px">&#128196; Doc</span>':'')+'</div></div><div class="gap-pair"><div class="sub-box"><div class="sub-lbl">Current state</div><div class="sub-val">'+esc(gap.current)+'</div></div><div class="sub-box"><div class="sub-lbl">Gap identified</div><div class="sub-val">'+esc(gap.gap)+'</div></div></div>'+(gap.manualWork?'<div style="font-size:11.5px;color:var(--warn);margin-bottom:7px;padding:5px 9px;background:var(--warn-bg);border-radius:var(--r-sm)">&#9888; Manual: '+esc(gap.manualWork)+'</div>':'')+'<div class="anugal-box"><div class="anugal-lbl">'+esc(CFG.companyName)+' resolution — '+esc(gap.anugalModule)+'</div><div class="anugal-val">'+esc(gap.anugalFix)+'</div></div></div>').join('')+
+  (g.painPoints&&g.painPoints.length?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px"><div class="card"><div class="card-title">Key pain points</div><ul class="pt-list">'+g.painPoints.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul></div><div class="card"><div class="card-title">Manual dependencies</div>'+( g.manualProcesses||[]).map(p=>'<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-mid)">&#8594; '+esc(p)+'</div>').join('')+'</div></div>':'')+
+  (g.quickWins&&g.quickWins.length?'<div class="card" style="margin-top:12px"><div class="card-title">Quick wins</div>'+g.quickWins.map(w=>'<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-mid);display:flex;gap:7px"><span style="color:var(--ok)">&#8594;</span>'+esc(w)+'</div>').join('')+'</div>':'')+
+  '<div style="margin-top:10px;display:flex;gap:8px"><button class="btn" onclick="S.gaps=null;saveS();renderContent()">&#8635; Regenerate</button><button class="btn btn-outline-ok" onclick="saveDraft()">&#128190; Save draft</button></div>';
+}
+
+function s7(){
+  const ready=S.c&&S.c.name&&S.gaps,hasAI=AI.provider!=='none',hasTpl=CFG.wordTemplateUploaded;
+  return '<div class="ph"><div class="ph-title">Generate reports</div><div class="ph-desc">Two report formats — technical for Product Owners, strategic for CIO / CFO.'+(hasTpl?' <span class="badge b-violet">Word template ready</span>':'')+'</div></div>'+
+  '<div class="mrow"><div class="mc"><div class="mv">'+S.apps.length+'</div><div class="mk">Applications</div></div><div class="mc"><div class="mv">'+S.critIds.length+'</div><div class="mk">Critical apps</div></div><div class="mc"><div class="mv">'+(S.gaps?S.gaps.gaps.length:0)+'</div><div class="mk">Gaps found</div></div><div class="mc"><div class="mv">'+( S.docs||[]).length+'</div><div class="mk">Docs analysed</div></div></div>'+
+  (!S.c.name?'<div class="alert alert-danger">Customer name required — complete Step 1.</div>':'')+
+  (!S.gaps?'<div class="alert alert-warn">Gap analysis required — complete Step 7 first.</div>':'')+
+  (!hasAI?'<div class="alert alert-info">&#128202; Template mode — professional reports generated from discovery data, no AI required.</div>':'')+
+  '<div class="rpt-grid">'+
+  '<div class="rpt-card teal"><div style="font-size:26px;margin-bottom:10px">&#128295;</div><div class="rpt-card-aud" style="color:var(--teal)">For Product Owners / Application Teams</div><div class="rpt-card-title">Application Gap Analysis Report</div><div class="rpt-card-desc">Per-app identity gaps, auth weaknesses, access control, '+esc(CFG.companyName)+' module configs, and document-derived findings.</div><div style="margin-bottom:12px">'+['Per-app gaps','Auth analysis','Access control',CFG.companyName+' config','Priority matrix','Doc insights'].map(t=>'<span class="rpt-tag b-blue">'+t+'</span>').join('')+'</div>'+
+  '<div style="display:flex;flex-direction:column;gap:8px">'+
+  '<button class="btn btn-teal btn-lg" style="justify-content:center" onclick="genPORpt(false)" '+((!ready||S.poRptLd)?'disabled':'')+'>'+( S.poRptLd?'<span class="spin"></span><span class="pulse">Generating...</span>':S.poRptDone?'&#8595; Download again':'&#10022; Generate PO report')+'</button>'+
+  (hasTpl?'<button class="btn btn-violet btn-lg" style="justify-content:center" onclick="genPORpt(true)" '+((!ready||S.poRptLd)?'disabled':'')+'>&#128196; Use Word template</button>':'')+
+  '</div>'+
+  (S.poRptDone?'<div class="alert alert-success" style="margin-top:9px;margin-bottom:0">&#10003; PO report downloaded</div>':'')+
+  '</div>'+
+  '<div class="rpt-card navy"><div style="font-size:26px;margin-bottom:10px">&#128202;</div><div class="rpt-card-aud" style="color:var(--navy)">For CIO / CFO / Executive Leadership</div><div class="rpt-card-title">Executive Discovery Report</div><div class="rpt-card-desc">Business risk, compliance exposure, ROI case, and a 3-phase strategic roadmap with investment summary.</div><div style="margin-bottom:12px">'+['Business risk','Compliance','Cost analysis','ROI case','Roadmap','Quick wins'].map(t=>'<span class="rpt-tag b-navy">'+t+'</span>').join('')+'</div>'+
+  '<div style="display:flex;flex-direction:column;gap:8px">'+
+  '<button class="btn btn-navy btn-lg" style="justify-content:center" onclick="genExecRpt(false)" '+((!ready||S.exRptLd)?'disabled':'')+'>'+( S.exRptLd?'<span class="spin"></span><span class="pulse">Generating...</span>':S.exRptDone?'&#8595; Download again':'&#10022; Generate executive report')+'</button>'+
+  (hasTpl?'<button class="btn btn-violet btn-lg" style="justify-content:center" onclick="genExecRpt(true)" '+((!ready||S.exRptLd)?'disabled':'')+'>&#128196; Use Word template</button>':'')+
+  '</div>'+
+  (S.exRptDone?'<div class="alert alert-success" style="margin-top:9px;margin-bottom:0">&#10003; Executive report downloaded</div>':'')+
+  '</div></div>'+
+  '<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:18px"><div><div class="card-title" style="margin-bottom:8px">PO report includes</div><ul class="checklist">'+['Full application inventory table','Per-app identity gap analysis','Auth & SSO gap assessment',CFG.companyName+' module mapping per app','Implementation priority matrix','Document-derived findings'].map(i=>'<li>'+i+'</li>').join('')+'</ul></div><div><div class="card-title" style="margin-bottom:8px">Executive report includes</div><ul class="checklist">'+['Executive summary (2-page)','Business risk assessment table','Compliance gap overview','Cost of manual processes','ROI & investment case','3-phase strategic roadmap'].map(i=>'<li>'+i+'</li>').join('')+'</ul></div></div></div>';
+}
+
+function bindEv(){
+  const b=(id,fn)=>on(id,'change',e=>fn(e.target.value));
+  const bi=(id,fn)=>on(id,'input',e=>fn(e.target.value));
+  if(S.step===0){b('f-name',v=>{S.c.name=v;$('sess-badge').textContent=v||'New session';});b('f-ind',v=>S.c.industry=v);b('f-size',v=>S.c.size=v);b('f-web',v=>S.c.website=v);bi('f-bg',v=>S.c.bg=v);b('f-cn',v=>S.c.cName=v);b('f-ce',v=>S.c.cEmail=v);b('f-cr',v=>S.c.cRole=v);b('f-date',v=>S.c.date=v);on('logo-inp','change',handleLogo);}
+  if(S.step===1){b('f-ctool',v=>S.l.customTool=v);b('f-tu',v=>S.l.totalUsers=v);b('f-ti',v=>S.l.totalIds=v);b('f-ad',v=>S.l.adDomains=v);b('f-cs',v=>S.l.cloudStr=v);bi('f-ch',v=>S.l.challenges=v);on('f-mat','input',e=>{S.l.maturity=parseInt(e.target.value);const d=$('mat-disp');if(d)d.innerHTML='<span class="badge b-blue">Level '+S.l.maturity+' — '+MAT[S.l.maturity-1]+'</span>';});}
+}
+function handleLogo(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{S.c.logo=e.target.result;S.c.logoName=f.name;saveS();renderContent();};r.readAsDataURL(f);}
+function toggleTool(el,t){const i=S.l.tools.indexOf(t);i>-1?S.l.tools.splice(i,1):S.l.tools.push(t);el.classList.toggle('sel',S.l.tools.includes(t));saveS();}
+function addApp(){const nm=$('na-name')&&$('na-name').value&&$('na-name').value.trim();if(!nm)return;S.apps.push({id:'a'+Date.now(),name:nm,type:($('na-type')&&$('na-type').value)||'ERP',users:($('na-users')&&$('na-users').value)||'',auth:($('na-auth')&&$('na-auth').value)||'',dept:($('na-dept')&&$('na-dept').value)||'',notes:($('na-notes')&&$('na-notes').value)||''});saveS();renderContent();}
+function removeApp(id){S.apps=S.apps.filter(a=>a.id!==id);S.critIds=S.critIds.filter(x=>x!==id);saveS();renderContent();}
+function toggleCrit(id){const i=S.critIds.indexOf(id);i>-1?S.critIds.splice(i,1):S.critIds.push(id);saveS();renderContent();}
+</script>
+
+<script>
+/* ═══ HELPERS ═══ */
+function buildModuleContext(){
+  // Build rich module descriptions for AI prompts
+  const mods=CFG.modules.map(m=>{
+    const parts=[m.name+' ('+m.category+'):',m.description];
+    if(m.benefits&&m.benefits.length)parts.push('Benefits: '+m.benefits.slice(0,4).join('; '));
+    if(m.gapPatterns&&m.gapPatterns.length)parts.push('Addresses: '+m.gapPatterns.slice(0,3).join('; '));
+    return parts.join(' ');
+  });
+  return mods.join('\n');
+}
+
+function getIndustryModules(industry){
+  // Return modules relevant to a specific industry (or all if no filter set)
+  if(!industry)return CFG.modules;
+  return CFG.modules.filter(m=>!m.industries||m.industries.length===0||m.industries.some(ind=>industry.toLowerCase().includes(ind.toLowerCase())||ind.toLowerCase().includes(industry.toLowerCase().split(' ')[0])));
+}
+
+function getIndustryContext(industry){
+  // Return industry-specific compliance and regulatory context
+  const ctx={
+    'Banking':    {regs:'SOX, PCI-DSS, Basel III, DORA',risks:'regulatory fines, data breach, fraud access',focus:'segregation of duties, real-time access monitoring, privileged account governance'},
+    'Healthcare': {regs:'HIPAA, HITECH, ISO 27001, GDPR',risks:'PHI breach, regulatory penalties, patient data exposure',focus:'role-based access to patient data, clinician access reviews, third-party vendor governance'},
+    'Manufacturing':{regs:'ISO 27001, IEC 62443, NIST CSF',risks:'OT/IT convergence risk, IP theft, supply chain access',focus:'OT/IT identity convergence, contractor access governance, ERP privileged access'},
+    'Retail':     {regs:'PCI-DSS, GDPR, CCPA',risks:'payment data breach, customer PII exposure, seasonal worker access',focus:'PCI scope reduction, seasonal worker lifecycle, third-party access management'},
+    'Technology': {regs:'ISO 27001, SOC 2, GDPR, CCPA',risks:'IP theft, insider threat, DevOps over-privilege',focus:'developer access governance, secrets management, just-in-time cloud access'},
+    'Government': {regs:'FISMA, NIST SP 800-53, ISM, PSPF',risks:'national security risk, data classification breach, insider threat',focus:'clearance-based access, need-to-know enforcement, privileged user monitoring'},
+    'Insurance':  {regs:'SOX, GDPR, Solvency II, ORSA',risks:'actuarial data exposure, fraud, regulatory breach',focus:'data classification enforcement, third-party access, SoD in financial processing'},
+    'Education':  {regs:'FERPA, GDPR, COPPA',risks:'student PII exposure, research data breach, IT resource abuse',focus:'student lifecycle management, faculty and staff provisioning, guest and research access'},
+    'Multimedia': {regs:'GDPR, CCPA, copyright regulations',risks:'content IP theft, contractor over-access, platform credential sprawl',focus:'creative tool access governance, contractor lifecycle, platform SSO consolidation'},
+    'Entertainment':{regs:'GDPR, CCPA, union compliance',risks:'IP theft, production system access, talent data breach',focus:'production environment access, contractor and talent access, post-production data governance'},
+    'Telecom':    {regs:'NIST CSF, GDPR, CPNI, TSA directives',risks:'critical infrastructure breach, subscriber data exposure',focus:'network element access governance, NOC privileged accounts, third-party vendor access'},
+    'Energy':     {regs:'NERC CIP, IEC 62443, ISO 27001',risks:'critical infrastructure attack, SCADA access, OT breach',focus:'OT/ICS identity governance, privileged access to critical systems, contractor access management'},
+    'Pharmaceutical':{regs:'FDA 21 CFR Part 11, GxP, GDPR, ISO 27001',risks:'clinical trial data integrity, IP theft, regulatory non-compliance',focus:'GxP-compliant access controls, electronic signature governance, research data access'},
+    'Professional':{regs:'ISO 27001, GDPR, client confidentiality',risks:'client data breach, insider access, data residency',focus:'matter-based access control, client portal governance, remote working access'},
+    'Legal':      {regs:'GDPR, solicitor-client privilege requirements',risks:'client confidentiality breach, legal document exposure',focus:'matter and client-based access, external counsel access, document management governance'},
+    'Defence':    {regs:'NIST SP 800-171, CMMC, ITAR, JSP 440',risks:'national security, classified data breach, supply chain',focus:'clearance-based access, data classification enforcement, supply chain identity governance'}
+  };
+  // Match the most relevant context
+  const match=Object.keys(ctx).find(k=>industry&&industry.toLowerCase().includes(k.toLowerCase()));
+  return match?ctx[match]:{regs:'ISO 27001, GDPR, applicable industry regulations',risks:'data breach, unauthorized access, compliance gaps',focus:'access governance, user lifecycle management, privileged access control'};
+}
+
+/* ═══ AI ACTIONS ═══ */
+async function genAIQs(){
+  if(S.aiQLd||AI.provider==='none')return;S.aiQLd=true;renderContent();
+  try{
+    const answered=S.qs.filter(q=>S.ans[q.id]).map(q=>'Q: '+q.q+'\nA: '+S.ans[q.id]).join('\n\n');
+    const crit=S.apps.filter(a=>S.critIds.includes(a.id)).map(a=>a.name+' ('+a.type+')').join(', ');
+    const indCtx=getIndustryContext(S.c.industry);
+    const txt=await callAI(
+      'Senior IGA consultant generating 5 targeted follow-up interview questions.\n'+
+      'Customer: '+S.c.name+' | Industry: '+S.c.industry+' | Size: '+S.c.size+'\n'+
+      'Industry compliance focus: '+indCtx.regs+'\n'+
+      'Industry-specific risks: '+indCtx.risks+'\n'+
+      'IAM Tools: '+(S.l.tools.join(', ')||'none')+' | Challenges: '+(S.l.challenges||'none')+'\n'+
+      'Critical apps: '+(crit||'none')+'\n'+
+      'Answers so far:\n'+(answered||'none yet')+'\n'+
+      'Generate 5 probing, industry-specific questions to uncover IGA gaps relevant to '+S.c.industry+'.\n'+
+      'Return ONLY JSON array: [{"id":"ai1","cat":"Category","q":"Question text","isAI":true}]');
+    S.qs=[...SQS,...pj(txt)];S.aiQDone=true;
+  }catch(e){toast('Failed: '+e.message);}
+  finally{S.aiQLd=false;saveS();renderContent();}
+}
+
+function buildDocCtx(){
+  const docs=S.docs||[];if(!docs.length)return'';
+  return'\n\nUPLOADED DOCUMENTS:\n'+docs.map(d=>{
+    if(d.isImage)return'[Document: "'+d.name+'" — '+(d.type==='sop'?'SOP':'Architecture')+' diagram. Note any IAM/integration gaps visible.]';
+    const snip=typeof d.content==='string'?d.content.slice(0,3000):'[binary]';
+    return'\n[Document: "'+d.name+'" ('+( d.type==='sop'?'Application SOP':'Architecture Document')+')]\n'+snip+'\n[/document]';
+  }).join('\n');
+}
+
+async function genGaps(){
+  if(S.gapLd)return;S.gapLd=true;renderContent();
+  try{
+    const qa=S.qs.map(q=>'['+q.cat+'] '+q.q+'\n> '+(S.ans[q.id]||'Not answered')).join('\n\n');
+    const crit=S.apps.filter(a=>S.critIds.includes(a.id)).map(a=>a.name+' ('+a.type+', auth: '+a.auth+')').join(', ');
+    const docCtx=buildDocCtx();
+    const indCtx=getIndustryContext(S.c.industry);
+    const relevantMods=getIndustryModules(S.c.industry);
+    const txt=await callAI(
+      'IGA gap analysis expert. Analyse discovery data'+(docCtx?' and uploaded documents':'')+'.\n'+
+      'Customer: '+S.c.name+' | Industry: '+S.c.industry+' | Size: '+S.c.size+'\n'+
+      'Industry compliance frameworks: '+indCtx.regs+'\n'+
+      'Industry-specific risks: '+indCtx.risks+'\n'+
+      'Industry IGA focus areas: '+indCtx.focus+'\n'+
+      'IAM Tools: '+S.l.tools.join(', ')+' | Users: '+S.l.totalUsers+' | Maturity: '+S.l.maturity+'/5\n'+
+      'Cloud: '+S.l.cloudStr+' | Challenges: '+S.l.challenges+'\n'+
+      'Critical apps: '+(crit||'none')+'\n'+
+      'Q&A:\n'+qa+docCtx+'\n\n'+
+      'VENDOR: '+CFG.companyName+'\n'+
+      'AVAILABLE MODULES (use these exact names in anugalModule field):\n'+buildModuleContext()+'\n\n'+
+      'Generate industry-specific gap analysis for '+S.c.industry+'. Reference '+indCtx.regs+' compliance requirements where relevant.\n'+
+      'Map each gap to the most appropriate '+CFG.companyName+' module from the list above.\n'+
+      'Return ONLY JSON:\n'+
+      '{"summary":"2-3 sentences tailored to '+S.c.industry+'","maturityScore":2,"maturityLabel":"Developing",'+
+      '"docInsights":"'+(docCtx?'2-3 sentences on document findings':'')+'",'+
+      '"gaps":[{"area":"gap area name","current":"current state","gap":"gap description specific to '+S.c.industry+'","impact":"High|Medium|Low","manualWork":"manual process or empty","anugalModule":"exact module name from list","anugalFix":"resolution using that module","fromDoc":false}],'+
+      '"painPoints":["industry-specific pain point 1","pain point 2","pain point 3"],'+
+      '"manualProcesses":["manual process 1","manual process 2","manual process 3"],'+
+      '"quickWins":["quick win 1","quick win 2"],"recs":["recommendation 1"]}',2000);
+    S.gaps={...pj(txt),isTemplate:false,fromDocs:(S.docs||[]).length>0};
+    if(!S.done.includes(6))S.done.push(6);
+  }catch(e){toast('Gap analysis failed: '+e.message);}
+  finally{S.gapLd=false;saveS();renderContent();}
+}
+
+function genTemplate(){
+  if(S.gapLd)return;S.gapLd=true;renderContent();
+  setTimeout(()=>{
+    try{
+      const l=S.l,docs=S.docs||[],ind=S.c.industry||'';
+      const indCtx=getIndustryContext(ind);
+      const hasSSO=l.tools.some(t=>t.includes('Okta')||t.includes('SailPoint')||t.includes('Azure AD')||t.includes('Saviynt'));
+      const mat=l.maturity;
+      const gaps=[];
+
+      // Helper: find best module by gap pattern match or fallback to index
+      function bestMod(patterns,fallbackIdx){
+        for(const pat of patterns){
+          const m=CFG.modules.find(m=>
+            (m.gapPatterns||[]).some(gp=>gp.toLowerCase().includes(pat.toLowerCase())||pat.toLowerCase().includes(gp.toLowerCase().split(' ')[0]))||
+            m.name.toLowerCase().includes(pat.toLowerCase())||
+            m.category.toLowerCase()===pat.toLowerCase()
+          );
+          if(m)return m.name;
+        }
+        return CFG.modules[fallbackIdx]?CFG.modules[fallbackIdx].name:DEFAULT_MODULES[fallbackIdx%DEFAULT_MODULES.length].name;
+      }
+
+      // Core gaps — always present at low maturity
+      if(mat<=2){
+        gaps.push({area:'Joiner-Mover-Leaver (JML) Automation',current:'Manual HR-to-IT communication for provisioning and deprovisioning',gap:'No automated JML workflows — access granted and revoked manually causing delays, errors, and security risk',impact:'High',manualWork:'HR notifies IT via email or ticket; IT manually creates/disables accounts across each system',anugalModule:bestMod(['JML','provisioning','lifecycle'],'Core',0),anugalFix:'Automates provisioning triggers from HRMS, enforces access policies, reduces provisioning time from days to minutes',fromDoc:false});
+        gaps.push({area:'Access Certification & Recertification',current:'No formal periodic access review process',gap:'Users accumulate entitlements without regular recertification — high privilege creep and '+indCtx.regs+' audit risk',impact:'High',manualWork:'Ad-hoc or spreadsheet-based reviews with no audit trail or enforcement',anugalModule:bestMod(['certification','certification','Compliance'],'Compliance',1),anugalFix:'Automated certification campaigns with risk-based routing, one-click decisions, and audit-ready evidence for '+indCtx.regs,fromDoc:false});
+      }
+
+      if(!hasSSO)gaps.push({area:'Single Sign-On (SSO) Coverage',current:'Applications use independent credentials with no centralized SSO',gap:'No enterprise SSO — multiple passwords, user friction, shadow IT risk, and complex offboarding across all platforms',impact:'High',manualWork:'Users maintain separate credentials per system; IT handles individual password resets and account lockouts',anugalModule:bestMod(['SSO','federation','Access'],'Access',4),anugalFix:'SAML/OIDC federation for all applications, MFA enforcement, centralized session management, single offboarding action',fromDoc:false});
+
+      if(mat<=3){
+        gaps.push({area:'Role Management & RBAC',current:'Roles defined informally per-system without enterprise governance',gap:'No enterprise RBAC — inconsistent entitlements, difficult to audit for '+indCtx.regs+', high SoD conflict risk',impact:'Medium',manualWork:'Role assignments tracked in spreadsheets; no central role catalogue or lifecycle governance',anugalModule:bestMod(['role','RBAC','Governance'],'Governance',2),anugalFix:'Enterprise role catalogue with full lifecycle management, SoD conflict detection, and automatic assignment/revocation',fromDoc:false});
+        gaps.push({area:'Privileged Access Management',current:'Admin and privileged accounts not centrally monitored or governed',gap:'Privileged accounts lack oversight — no session recording, shared credentials, excessive standing access creating '+(ind.includes('Banking')||ind.includes('Government')||ind.includes('Defence')?'critical security and regulatory':'significant security')+' risk',impact:'High',manualWork:'Admin credentials shared informally; no vaulting, session governance, or just-in-time access controls',anugalModule:bestMod(['PAM','privileged','Security'],'Security',5),anugalFix:'Just-in-time privileged access, full session recording, credential vaulting, break-glass emergency controls',fromDoc:false});
+      }
+
+      // Compliance gap — industry-specific
+      if(l.challenges&&(l.challenges.toLowerCase().includes('compli')||l.challenges.toLowerCase().includes('audit')||l.challenges.toLowerCase().includes('regulat'))){
+        gaps.push({area:'Compliance Reporting & Audit Readiness',current:'Manual evidence collection for compliance audits',gap:'No automated compliance reporting for '+indCtx.regs+' — audit preparation takes weeks of manual effort with risk of gaps',impact:'Medium',manualWork:'Manual access data extraction and compilation for audit evidence; no continuous compliance monitoring',anugalModule:bestMod(['compliance','reporting','audit'],'Compliance',7),anugalFix:'Automated audit-ready reports for '+indCtx.regs+' with continuous monitoring and packaged evidence',fromDoc:false});
+      }
+
+      // HR integration
+      gaps.push({area:'HR-IT Integration',current:'HR system not integrated with IAM — provisioning is disconnected from HR events',gap:'Joiners wait for access, leavers retain access past offboarding — directly increasing '+indCtx.risks,impact:'High',manualWork:'HR sends CSV exports or emails; IT manually creates accounts in each system individually',anugalModule:bestMod(['HR','HRMS','Integration'],'Integration',3),anugalFix:'Real-time HRIS integration (Workday, SAP HCM, Oracle HCM, BambooHR) — event-driven provisioning and deprovisioning',fromDoc:false});
+
+      // Cloud gap
+      if(!l.cloudStr||l.cloudStr.includes('Hybrid')||l.cloudStr.includes('on-prem')){
+        gaps.push({area:'Cloud Identity Governance',current:'On-premises identity tools with limited or no cloud application coverage',gap:'Cloud applications outside IGA scope — shadow access, policy inconsistency, and growing blind spots as cloud adoption increases',impact:'Medium',manualWork:'Cloud app admins manage access independently; no central visibility or policy enforcement across cloud estate',anugalModule:bestMod(['cloud','Cloud'],'Cloud',6),anugalFix:'SCIM 2.0 and REST API connectors for cloud apps, unified policy enforcement across on-prem and cloud, centralized entitlement visibility',fromDoc:false});
+      }
+
+      // Industry-specific gaps
+      if(ind.includes('Banking')||ind.includes('financial')||ind.includes('Insurance')){
+        gaps.push({area:'Segregation of Duties (SoD) Enforcement',current:'SoD policies not formally defined or enforced across financial systems',gap:'Conflicting financial access roles not detected — risk of fraud, unauthorized transactions, and SOX/regulatory findings',impact:'High',manualWork:'SoD checks performed manually at audit time; conflicts identified reactively not preventively',anugalModule:bestMod(['SoD','role','Governance'],'Governance',2),anugalFix:'Automated SoD conflict detection across all financial systems with real-time policy enforcement and remediation workflows',fromDoc:false});
+      }
+      if(ind.includes('Healthcare')||ind.includes('Pharmaceutical')||ind.includes('life sciences')){
+        gaps.push({area:'Clinical & Patient Data Access Governance',current:'Access to patient/clinical data not governed by fine-grained IGA policies',gap:'HIPAA/GxP access control requirements not fully met — risk of PHI breach and regulatory non-compliance',impact:'High',manualWork:'Clinician access managed per-application; no central policy enforcing minimum necessary access',anugalModule:bestMod(['compliance','data','Access'],'Compliance',7),anugalFix:'Role-based access aligned to clinical roles, automated HIPAA/GxP access certifications, PHI access audit trails',fromDoc:false});
+      }
+      if(ind.includes('Multimedia')||ind.includes('Entertainment')||ind.includes('Media')){
+        gaps.push({area:'Contractor & Creative Talent Access Lifecycle',current:'Freelancers, contractors and production staff onboarded ad-hoc with no structured access lifecycle',gap:'Project-based access not removed post-production — IP exposure risk and content platform credential sprawl',impact:'High',manualWork:'Project managers notify IT informally; contractor offboarding inconsistent across production and creative tools',anugalModule:bestMod(['contractor','JML','lifecycle','Core'],'Core',0),anugalFix:'Automated contractor lifecycle with project-scoped access, automatic deprovisioning on project end date, creative platform SSO consolidation',fromDoc:false});
+      }
+      if(ind.includes('Education')){
+        gaps.push({area:'Student & Faculty Identity Lifecycle',current:'Student enrolment and graduation not integrated with IT provisioning and deprovisioning',gap:'Students retain access to systems post-graduation; faculty access not aligned to term contracts — FERPA/GDPR risk',impact:'Medium',manualWork:'IT manually provisions student accounts from enrolment lists; deprovisioning delayed or missed on graduation',anugalModule:bestMod(['student','lifecycle','HR','Core'],'Core',0),anugalFix:'SIS/HRMS-triggered student and faculty lifecycle automation, role-based access by course/department, automated deprovisioning on graduation/contract end',fromDoc:false});
+      }
+      if(ind.includes('Government')||ind.includes('Defence')){
+        gaps.push({area:'Clearance-Based Access & Need-to-Know Enforcement',current:'System access not aligned to security clearance levels or need-to-know principles',gap:'Users may access classified or sensitive data beyond their clearance level — critical national security and compliance risk',impact:'High',manualWork:'Clearance-based access manually managed and not integrated with HR clearance records',anugalModule:bestMod(['clearance','Security','governance'],'Security',5),anugalFix:'Clearance-level attributes from HR/security records drive access policies; automated reviews when clearances lapse or change',fromDoc:false});
+      }
+
+      // Custom modules — add gap for each custom module with gap patterns defined
+      CFG.modules.filter(m=>m.id&&m.id.startsWith('custom_')&&m.gapPatterns&&m.gapPatterns.length>0).forEach(m=>{
+        gaps.push({area:m.name+' Gap',current:'Current processes addressed by '+m.name+' are not automated or governed',gap:m.gapPatterns[0]+(m.gapPatterns[1]?' and '+m.gapPatterns[1]:''),impact:'Medium',manualWork:'Manual processes in scope for '+m.name,anugalModule:m.name,anugalFix:m.description+' '+( m.benefits&&m.benefits[0]?m.benefits[0]:''),fromDoc:false});
+      });
+
+      // Documents gap
+      if(docs.length>0)gaps.push({area:'Document-Identified Process Gaps',current:docs.length+' document'+(docs.length!==1?'s':'')+' uploaded: '+docs.map(d=>d.name).join(', '),gap:'Uploaded SOPs and architecture documents indicate process gaps and integration requirements requiring structured remediation',impact:'Medium',manualWork:'Processes in uploaded SOPs performed manually without IGA automation',anugalModule:bestMod(['analytics','workflow','Intelligence'],'Intelligence',8),anugalFix:'Automate identified manual processes; integrate SOP-defined workflows into '+CFG.companyName+' governance framework',fromDoc:true});
+
+      const hi=gaps.filter(g=>g.impact==='High').length;
+      S.gaps={
+        summary:(S.c.name||'The organization')+' is a '+ind+' organization with a self-assessed IAM maturity of '+mat+'/5 ('+MAT[mat-1]+') and '+S.apps.length+' applications in scope. '+hi+' high-impact identity governance gaps have been identified, with key compliance exposure across '+indCtx.regs+'. Primary risk areas are '+gaps.filter(g=>g.impact==='High').map(g=>g.area).slice(0,2).join(' and ')+', representing significant '+indCtx.risks+'.',
+        maturityScore:mat,maturityLabel:MAT[mat-1],
+        docInsights:docs.length>0?docs.length+' document'+(docs.length!==1?'s were':' was')+' uploaded ('+docs.map(d=>d.name).join(', ')+'). Document-specific process gaps have been tagged in the analysis below. These should be reviewed against '+indCtx.regs+' requirements.':'',
+        gaps,
+        painPoints:['Manual identity lifecycle processes causing delays for joiners and elevated risk for leavers','No automated access reviews creating '+indCtx.regs+' compliance exposure','Lack of central visibility into user entitlements across '+S.apps.length+' applications',...(l.challenges?[l.challenges.slice(0,120)]:['Inconsistent access control policies across on-premises and cloud systems'])],
+        manualProcesses:['HR-to-IT notification via email/ticket for every joiner, mover, and leaver event','Spreadsheet-based access request tracking with no automated approval routing','Manual evidence collection and compilation for '+indCtx.regs+' audits','Password reset and account unlock handled individually by IT helpdesk'],
+        quickWins:['Automate HRMS-triggered deprovisioning to eliminate leaver access risk within 30 days','Run access certification campaign for top 5 critical apps targeting '+indCtx.regs+' scope','Deploy SSO for cloud apps to centralize credential management and simplify offboarding','Establish privileged account register and begin quarterly access review cadence'],
+        recs:['Deploy '+CFG.companyName+' JML Engine integrated with primary HRMS as Phase 1 priority','Enable '+CFG.companyName+' Access Certifications scoped to '+indCtx.regs+' compliance requirements','Implement industry-specific access controls for '+ind+' regulatory environment'],
+        isTemplate:true,fromDocs:docs.length>0
+      };
+      if(!S.done.includes(6))S.done.push(6);
+    }catch(e){toast('Template analysis failed: '+e.message);}
+    finally{S.gapLd=false;saveS();renderContent();}
+  },300);
+}
+
+// Upgrade bestMod to work as standalone function
+function bestMod(patterns,categoryFallback,indexFallback){
+  for(const pat of patterns){
+    const m=CFG.modules.find(mod=>
+      (mod.gapPatterns||[]).some(gp=>gp.toLowerCase().includes(pat.toLowerCase())||pat.toLowerCase().includes(gp.toLowerCase().split(' ')[0]))||
+      mod.name.toLowerCase().includes(pat.toLowerCase())||
+      mod.shortName&&mod.shortName.toLowerCase().includes(pat.toLowerCase())||
+      mod.category.toLowerCase()===pat.toLowerCase()
+    );
+    if(m)return m.name;
+  }
+  if(categoryFallback){const m=CFG.modules.find(mod=>mod.category===categoryFallback);if(m)return m.name;}
+  return CFG.modules[indexFallback||0]?CFG.modules[indexFallback||0].name:DEFAULT_MODULES[indexFallback%DEFAULT_MODULES.length].name;
+}
+
+/* ═══ REPORT GENERATION ═══ */
+async function genPORpt(useTpl){
+  if(S.poRptLd||!S.c.name||!S.gaps)return;
+  S.poRptLd=true;renderContent();
+  try{
+    const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+    let rpt;
+    if(AI.provider!=='none'){
+      const detail=crit.map(a=>'- '+a.name+': type='+a.type+', users='+(a.users||'?')+', auth='+a.auth+', dept='+(a.dept||'N/A')+', notes='+(a.notes||'none')).join('\n');
+      const docCtx=buildDocCtx();
+      const indCtx=getIndustryContext(S.c.industry);
+      const txt=await callAI(
+        'IGA architect writing Application Gap Analysis Report for Product Owners.\n'+
+        'Customer: '+S.c.name+' | Industry: '+S.c.industry+' | Size: '+S.c.size+'\n'+
+        'Industry compliance: '+indCtx.regs+' | Industry risks: '+indCtx.risks+'\n'+
+        'IAM tools: '+S.l.tools.join(', ')+' | Maturity: '+S.l.maturity+'/5\n'+
+        'Vendor: '+CFG.companyName+'\n'+
+        'AVAILABLE MODULES (use exact names):\n'+buildModuleContext()+'\n'+
+        'Critical apps:\n'+(detail||'none')+'\nGap analysis: '+JSON.stringify(S.gaps)+docCtx+'\n'+
+        'Write industry-specific per-app analysis for '+S.c.industry+'. Reference '+indCtx.regs+' where relevant.\n'+
+        'Return ONLY JSON:\n{"intro":"2 technical paragraphs tailored to '+S.c.industry+'","appAnalyses":[{"appName":"name","currentState":"state","authGaps":"gaps","accessGaps":"gaps","complianceRisk":"risk mentioning relevant '+indCtx.regs.split(',')[0]+' requirements","anugalModules":["exact module name 1","exact module name 2"],"integrationSteps":["s1","s2","s3"],"priority":"High|Medium|Low","effort":"Low|Medium|High","docFindings":"findings or empty"}],"crossAppGaps":["g1","g2","g3"],"priorityMatrix":[{"app":"name","action":"action","priority":"High","effort":"Low"}],"technicalRecs":["r1","r2","r3","r4"],"implementationNotes":"paragraph","docSummary":"document analysis or empty"}',2000);
+      rpt=pj(txt);
+    }else{rpt=tplPO(crit);}
+    if(useTpl&&CFG.wordTemplate)dlDocFromTemplate(rpt,'po');else buildPODoc(rpt);
+    S.poRptDone=true;if(!S.done.includes(7))S.done.push(7);
+  }catch(e){toast('PO report failed: '+e.message);}
+  finally{S.poRptLd=false;saveS();renderContent();}
+}
+
+async function genExecRpt(useTpl){
+  if(S.exRptLd||!S.c.name||!S.gaps)return;
+  S.exRptLd=true;renderContent();
+  try{
+    const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+    let rpt;
+    if(AI.provider!=='none'){
+      const indCtx=getIndustryContext(S.c.industry);
+      const txt=await callAI(
+        'Strategic advisor writing executive IGA Discovery Report for CIO and CFO.\n'+
+        'Customer: '+S.c.name+' | Industry: '+S.c.industry+' | Size: '+S.c.size+'\n'+
+        'Industry compliance: '+indCtx.regs+' | Industry risks: '+indCtx.risks+'\n'+
+        'Maturity: '+S.l.maturity+'/5 ('+MAT[S.l.maturity-1]+') | Cloud: '+S.l.cloudStr+' | Users: '+S.l.totalUsers+'\n'+
+        'Critical apps: '+crit.map(a=>a.name).join(', ')+' | Vendor: '+CFG.companyName+'\n'+
+        'Gaps: '+S.gaps.gaps.length+' total, '+S.gaps.gaps.filter(g=>g.impact==='High').length+' high impact\n'+
+        'Manual processes: '+(S.gaps.manualProcesses||[]).join('; ')+'\n'+
+        'Key '+CFG.companyName+' modules: '+CFG.modules.slice(0,5).map(m=>m.name+' — '+m.description).join('\n')+'\n'+
+        'Business language only. Tailor ALL content specifically to '+S.c.industry+' — reference '+indCtx.regs+' and '+indCtx.risks+'.\n'+
+        'Return ONLY JSON:\n{"execSummary":"3 paragraphs tailored to '+S.c.industry+'","businessRisks":[{"risk":"industry-specific risk title","impact":"impact for '+S.c.industry+'","likelihood":"High|Medium|Low","category":"Operational|Compliance|Security|Financial"}],"complianceExposure":"paragraph referencing '+indCtx.regs+'","operationalCost":"paragraph","roiCase":"paragraph mentioning '+CFG.companyName+' modules","investmentSummary":{"phases":[{"phase":"Phase 1 (0-90 days)","focus":"focus for '+S.c.industry+'","value":"value","investment":"Low|Medium|High"}]},"strategicRoadmap":[{"phase":"Phase 1","title":"title","duration":"0-3 months","objectives":["o1","o2"],"outcomes":["r1","r2"]}],"quickWins":["win for '+S.c.industry+'","w2","w3"],"nextSteps":["s1","s2","s3","s4"],"closingStatement":"2 sentence close for '+S.c.industry+'"}',2000);
+      rpt=pj(txt);
+    }else{rpt=tplExec(crit);}
+    if(useTpl&&CFG.wordTemplate)dlDocFromTemplate(rpt,'exec');else buildExecDoc(rpt);
+    S.exRptDone=true;if(!S.done.includes(7))S.done.push(7);
+  }catch(e){toast('Exec report failed: '+e.message);}
+  finally{S.exRptLd=false;saveS();renderContent();}
+}
+
+/* ═══ TEMPLATE REPORT BUILDERS ═══ */
+function tplPO(crit){
+  const g=S.gaps,c=S.c,l=S.l,docs=S.docs||[];
+  const ind=c.industry||'',indCtx=getIndustryContext(ind);
+  const relevantMods=getIndustryModules(ind).slice(0,4);
+  return{
+    intro:'This Application Gap Analysis Report presents a technical assessment of the identity governance posture at '+(c.name||'the organization')+' — a '+ind+' organization — across '+S.apps.length+' applications. The assessment is based on '+Object.keys(S.ans).filter(function(id){return S.ans[id];}).length+' stakeholder interview responses'+(docs.length?' and '+docs.length+' uploaded document'+(docs.length!==1?'s':''):'')+'. Applicable compliance frameworks include '+indCtx.regs+'.\n\nWith an IAM maturity level of '+l.maturity+'/5 ('+MAT[l.maturity-1]+'), the organization requires targeted improvements across '+g.gaps.length+' identified areas. '+g.gaps.filter(function(x){return x.impact==='High';}).length+' gaps are high impact requiring immediate attention given the '+ind+' regulatory environment.',
+    appAnalyses:crit.map(a=>({
+      appName:a.name,
+      currentState:a.type+' application serving '+(a.users||'unknown')+' users'+(a.dept?' in '+a.dept:'')+'. Auth: '+a.auth+'. '+(a.notes||'No additional context provided.'),
+      authGaps:'Current auth method ('+a.auth+') '+(a.auth==='Username / Password'?'lacks MFA and SSO — significant credential risk and phishing exposure especially in a '+ind+' environment requiring '+indCtx.regs+' compliance':'should be reviewed for alignment with enterprise SSO and MFA standards required under '+indCtx.regs)+'.',
+      accessGaps:'Access to '+a.name+' is not governed by a central IGA platform. Role definitions, entitlement reviews, provisioning and deprovisioning are performed manually — creating '+indCtx.risks+'.',
+      complianceRisk:'Without IGA governance, '+a.name+' access cannot be included in automated certification campaigns for '+indCtx.regs+'. Evidence must be gathered manually, creating audit exposure.',
+      anugalModules:relevantMods.map(m=>m.name),
+      integrationSteps:['Map '+a.name+' entitlements and roles into '+CFG.companyName+' Role Manager','Connect '+a.name+' via SCIM/API or CSV connector','Configure JML rules: auto-provision on join, deprovision on exit, modify on role change','Include '+a.name+' in '+indCtx.regs.split(',')[0]+'-scoped access certification campaign','Enable audit trail for all access changes to '+a.name],
+      priority:S.critIds.includes(a.id)?'High':'Medium',effort:'Medium',
+      docFindings:docs.length>0?'Review uploaded SOP documents for '+a.name+'-specific provisioning procedures — cross-reference against '+indCtx.regs+' requirements.':''
+    })),
+    crossAppGaps:['No centralized identity repository covering all '+ind+' in-scope applications','Inconsistent access review cadence — insufficient for '+indCtx.regs+' compliance','Multiple authentication silos with no enterprise SSO federation','Offboarding not synchronized — leaver access persists across systems'],
+    priorityMatrix:crit.map(a=>({app:a.name,action:'Connect to '+CFG.companyName+', define roles, enable '+indCtx.regs.split(',')[0]+'-scoped certification',priority:S.critIds.includes(a.id)?'High':'Medium',effort:'Medium'})),
+    technicalRecs:['Deploy '+CFG.companyName+' HR Connector to enable event-driven JML automation from primary HRMS','Prioritize SSO for critical '+ind+' applications to meet '+indCtx.regs.split(',')[0]+' access control requirements','Establish enterprise role catalogue aligned to '+ind+' role structures before expanding certification','Implement PAM integration for all admin accounts — especially critical in '+ind],
+    implementationNotes:'Begin with HRMS integration and high-priority critical applications. Phase 1 (0-90 days) focuses on JML automation and deprovisioning. Phase 2 (90-180 days) targets '+indCtx.regs.split(',')[0]+' certification campaigns and role governance. Full portfolio coverage in Phase 3 (180+ days).',
+    docSummary:docs.length>0?docs.length+' document'+(docs.length!==1?'s':'')+' reviewed: '+docs.map(d=>d.name).join(', ')+'. Findings tagged throughout this report. Cross-reference against '+indCtx.regs+' requirements.':''
+  };
+}
+
+function tplExec(crit){
+  const g=S.gaps,c=S.c,l=S.l,docs=S.docs||[];
+  const ind=c.industry||'',indCtx=getIndustryContext(ind);
+  const hi=g.gaps.filter(x=>x.impact==='High').length;
+  const topMods=CFG.modules.slice(0,3).map(m=>m.name).join(', ');
+  return{
+    execSummary:(c.name||'The organization')+' engaged '+CFG.companyName+' for an Identity Governance & Administration (IGA) discovery assessment. As a '+ind+' organization, '+( c.name||'the organization')+' operates under '+indCtx.regs+' compliance obligations and faces specific risks including '+indCtx.risks+'. The assessment covered '+S.apps.length+' applications and '+( l.totalUsers||'a significant user population')+', identifying '+g.gaps.length+' identity governance gaps of which '+hi+' are high impact.\n\nThe IAM maturity is assessed at '+l.maturity+'/5 ('+MAT[l.maturity-1]+'), indicating '+(l.maturity<=2?'significant opportunity to reduce compliance risk and operational overhead through IGA automation':l.maturity<=3?'established capabilities with clear opportunities to achieve '+indCtx.regs+'-compliant governance':'strong foundational capabilities with targeted improvements to achieve fully optimized governance')+'. Key risk areas are '+g.gaps.filter(x=>x.impact==='High').slice(0,3).map(x=>x.area).join(', ')+'.\n\n'+CFG.companyName+'\'s IGA platform — including '+topMods+' — addresses all identified gaps through a phased approach, delivering measurable '+ind+' compliance improvements and risk reduction within the first 90 days.',
+    businessRisks:[
+      {risk:'Regulatory Non-Compliance ('+indCtx.regs.split(',')[0]+')',impact:'Failure to demonstrate access controls and certification under '+indCtx.regs+' risks regulatory sanctions, audit findings, and reputational damage',likelihood:'High',category:'Compliance'},
+      {risk:'Orphaned Account & Leaver Access',impact:'Departed staff retaining active system access creates '+indCtx.risks+' exposure specific to the '+ind+' sector',likelihood:'High',category:'Security'},
+      {risk:'Privilege Escalation',impact:'Unmonitored privileged accounts expose '+ind+' critical systems to insider threat and external attack vectors',likelihood:'Medium',category:'Security'},
+      {risk:'Operational Productivity Loss',impact:'Manual identity processes consume significant IT resource across every joiner, mover, and leaver event — scaling cost grows with organization',likelihood:'High',category:'Operational'}
+    ],
+    complianceExposure:(c.name||'The organization')+' faces specific compliance exposure under '+indCtx.regs+'. Without automated access reviews, a central evidence repository, and continuous compliance monitoring, demonstrating adherence to '+indCtx.regs.split(',')[0]+' requirements during audits requires extensive manual effort and remains inherently unreliable.',
+    operationalCost:'Identity-related manual processes identified include: '+(g.manualProcesses||[]).slice(0,3).join('; ')+'. In a '+ind+' environment, these inefficiencies directly impact operational continuity and regulatory standing. At '+( l.totalUsers||'current')+' scale, this overhead scales linearly with organizational growth.',
+    roiCase:'Implementing '+CFG.companyName+'\'s IGA platform — including '+topMods+' — is projected to reduce provisioning time by 80-90%, eliminate manual '+indCtx.regs.split(',')[0]+' audit preparation, and significantly reduce risk exposure. '+ind+' organizations of comparable size typically achieve payback within 12-18 months through productivity gains and audit cost reduction.',
+    investmentSummary:{phases:[
+      {phase:'Phase 1 (0-90 days)',focus:'HRMS integration, JML automation, '+indCtx.regs.split(',')[0]+' scope applications',value:'Immediate risk reduction, automated onboarding/offboarding, '+indCtx.regs.split(',')[0]+' audit readiness',investment:'Medium'},
+      {phase:'Phase 2 (90-180 days)',focus:'Access certifications, role management, SoD for '+ind,value:'Full '+indCtx.regs.split(',')[0]+' compliance, privilege right-sizing, SoD enforcement',investment:'Medium'},
+      {phase:'Phase 3 (180+ days)',focus:'Full application portfolio, advanced analytics, '+ind+'-specific modules',value:'Optimized governance, predictive risk scoring, continuous compliance',investment:'Medium'}
+    ]},
+    strategicRoadmap:[
+      {phase:'Phase 1',title:'Foundation & '+ind+' Risk Reduction',duration:'0-90 days',objectives:['Deploy '+CFG.companyName+' core platform','Integrate primary HRMS','Automate JML for top critical apps','Establish deprovisioning automation'],outcomes:['Orphaned account risk eliminated for critical apps','Provisioning time reduced 80%','Initial '+indCtx.regs.split(',')[0]+' audit evidence capability established']},
+      {phase:'Phase 2',title:ind+' Governance & Compliance',duration:'90-180 days',objectives:['Enable access certifications for '+indCtx.regs.split(',')[0]+' scope','Deploy role management aligned to '+ind+' roles','Configure SoD policies for '+ind],outcomes:['Audit-ready evidence for '+indCtx.regs.split(',')[0],'Privilege accumulation eliminated','Compliance posture materially improved']},
+      {phase:'Phase 3',title:'Optimisation & Full Coverage',duration:'180+ days',objectives:['Onboard full application portfolio','Enable advanced analytics','Activate continuous '+indCtx.regs+' monitoring'],outcomes:['Level 4-5 maturity achieved','Full IGA visibility across all '+ind+' systems','Continuous compliance assurance']}
+    ],
+    quickWins:['Automate HRMS deprovisioning to eliminate leaver access risk — critical for '+indCtx.regs.split(',')[0]+' compliance','Run access certification campaign for top 5 critical apps targeting '+indCtx.regs.split(',')[0]+' scope','Deploy SSO for cloud apps — immediate credential governance and offboarding improvement'],
+    nextSteps:['Schedule '+CFG.companyName+' technical scoping workshop with IT, security and '+ind+' compliance teams','Confirm '+indCtx.regs.split(',')[0]+' audit timeline to align Phase 1 delivery','Define critical application list with '+ind+'-specific compliance scope','Identify HRMS integration approach as Phase 1 first deliverable'],
+    closingStatement:(c.name||'The organization')+' has a clear, actionable path to achieving '+indCtx.regs.split(',')[0]+'-compliant identity governance. '+CFG.companyName+'\'s platform delivers the automation and audit capability needed to protect your '+ind+' organization and demonstrate compliance with confidence.'
+  };
+}
+
+/* ═══ WORD TEMPLATE MODE ═══ */
+function dlDocFromTemplate(rpt,type){
+  // When a template is uploaded, generate a content-only .html that mimics the template style
+  // and signals Word to use the template as its base
+  toast('Generating report using your Word template as base...','ok');
+  const isExec=type==='exec';
+  if(isExec)buildExecDoc(rpt,true);else buildPODoc(rpt,true);
+}
+
+/* ═══ WORD CSS (FIXED FOR PROPER A4 RENDERING) ═══ */
+function wordCSS(pri,acc){
+  pri=pri||CFG.primaryColor;acc=acc||CFG.accentColor;
+  return '@page Section1{size:595.45pt 841.7pt;margin:72pt 72pt 72pt 72pt;mso-header-margin:35.4pt;mso-footer-margin:35.4pt;mso-paper-source:0;}'+
+  'div.Section1{page:Section1;}'+
+  'body{font-family:Calibri,sans-serif;font-size:11pt;color:#1f2937;margin:0;padding:0;line-height:1.5;mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;}'+
+  'h1{font-family:Calibri,sans-serif;font-size:22pt;color:'+pri+';font-weight:700;margin:0 0 6pt;mso-style-priority:9;line-height:1.2;}'+
+  'h2{font-family:Calibri,sans-serif;font-size:13pt;color:'+pri+';font-weight:700;border-bottom:2pt solid '+pri+';padding-bottom:3pt;margin:18pt 0 8pt;mso-style-priority:9;page-break-after:avoid;}'+
+  'h3{font-family:Calibri,sans-serif;font-size:11.5pt;color:'+acc+';font-weight:600;margin:12pt 0 5pt;mso-style-priority:9;}'+
+  'p{font-family:Calibri,sans-serif;font-size:11pt;margin:0 0 8pt;line-height:1.5;}'+
+  'table{border-collapse:collapse;width:100%;mso-table-lspace:0pt;mso-table-rspace:0pt;mso-table-layout-alt:fixed;table-layout:fixed;word-break:break-word;}'+
+  'th{background:'+pri+';color:#ffffff;padding:6pt 7pt;font-family:Calibri,sans-serif;font-size:9.5pt;font-weight:700;text-align:left;border:1pt solid '+pri+';word-break:break-word;overflow-wrap:break-word;}'+
+  'td{border:0.75pt solid #d1d5db;padding:6pt 7pt;font-family:Calibri,sans-serif;font-size:10pt;vertical-align:top;word-break:break-word;overflow-wrap:break-word;line-height:1.45;}'+
+  'tr:nth-child(even) td{background:#f8fafc;}'+
+  'ul,ol{margin:4pt 0 8pt;padding-left:20pt;}'+
+  'li{font-family:Calibri,sans-serif;font-size:10pt;margin:3pt 0;line-height:1.45;}'+
+  '.cover-table{width:100%;border:none;mso-table-lspace:0;mso-table-rspace:0;}'+
+  '.cover-table td{border:none;padding:0;}'+
+  '.meta-table{width:100%;border:none;mso-table-lspace:0;mso-table-rspace:0;}'+
+  '.meta-table td{border:none;padding:4pt 0;}'+
+  '.ib{background:#eff6ff;border-left:3pt solid '+pri+';padding:10pt 12pt;margin:8pt 0;}'+
+  '.tib{background:#f0fdfa;border-left:3pt solid '+acc+';padding:10pt 12pt;margin:8pt 0;}'+
+  '.vib{background:#f5f3ff;border-left:3pt solid #7c3aed;padding:10pt 12pt;margin:8pt 0;}'+
+  '.warn-box{background:#fffbeb;border-left:3pt solid #d97706;padding:8pt 10pt;margin:6pt 0;}'+
+  '.footer-row{border-top:0.75pt solid #e5e7eb;padding-top:8pt;margin-top:40pt;text-align:center;color:#9ca3af;font-size:8.5pt;}'+
+  '.tag-h{background:#fee2e2;color:#b91c1c;padding:1pt 5pt;font-size:8.5pt;font-weight:700;}'+
+  '.tag-m{background:#fef3c7;color:#92400e;padding:1pt 5pt;font-size:8.5pt;font-weight:700;}'+
+  '.tag-l{background:#d1fae5;color:#065f46;padding:1pt 5pt;font-size:8.5pt;font-weight:700;}'+
+  'img{max-width:200pt;max-height:70pt;mso-style-priority:1;}'+
+  '.page-break{page-break-after:always;mso-break-type:page-break;}';
+}
+
+function iTag(v){return '<span class="'+(v==='High'?'tag-h':v==='Medium'?'tag-m':'tag-l')+'">'+v+'</span>';}
+function logoH(c){return c&&c.logo?'<img src="'+c.logo+'" alt="'+esc(c.name)+'" />':'<span style="font-size:18pt;font-weight:700;color:'+CFG.primaryColor+'">'+esc(CFG.companyName)+'</span>';}
+
+function dlDoc(html,fn){
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=UTF-8'});
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download=fn;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),500);
+}
+
+function wrapDoc(body,pri,acc){
+  pri=pri||CFG.primaryColor;acc=acc||CFG.accentColor;
+  return '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'+
+  '<head><meta charset="UTF-8">'+
+  '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->'+
+  '<style>'+wordCSS(pri,acc)+'</style></head>'+
+  '<body><div class="Section1">'+body+'</div></body></html>';
+}
+
+function coverMeta(c,l,reportType,audience,accentStyle,isTemplate){
+  return '<table class="meta-table"><tbody>'+
+  '<tr><td style="width:38%;color:#6b7280;font-size:9.5pt">Audience</td><td style="font-weight:700;font-size:9.5pt;'+accentStyle+'">'+audience+'</td></tr>'+
+  '<tr><td style="color:#6b7280;font-size:9.5pt">Prepared by</td><td style="font-size:9.5pt">'+esc(CFG.reportPreparedBy)+'</td></tr>'+
+  '<tr><td style="color:#6b7280;font-size:9.5pt">Primary contact</td><td style="font-size:9.5pt">'+(c.cName||'&mdash;')+(c.cRole?' &mdash; '+esc(c.cRole):'')+'</td></tr>'+
+  '<tr><td style="color:#6b7280;font-size:9.5pt">Assessment date</td><td style="font-size:9.5pt">'+c.date+'</td></tr>'+
+  '<tr><td style="color:#6b7280;font-size:9.5pt">IAM maturity</td><td style="font-size:9.5pt">'+l.maturity+'/5 &mdash; '+MAT[l.maturity-1]+'</td></tr>'+
+  '<tr><td style="color:#6b7280;font-size:9.5pt">Analysis type</td><td style="font-size:9.5pt">'+(isTemplate?'Template (structured from discovery data)':'AI-enhanced ('+( AI.provider==='anthropic'?'Claude':'GPT-4o')+')')+'</td></tr>'+
+  '</tbody></table>';
+}
+
+function footerHtml(c){
+  return '<div class="footer-row">'+esc(CFG.footerText)+' &nbsp;|&nbsp; Confidential &mdash; '+esc(c.name||'Customer')+' &nbsp;|&nbsp; '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</div>';
+}
+
+/* ═══ PO DOCUMENT BUILDER ═══ */
+function buildPODoc(rpt,useTplStyle){
+  const c=S.c,l=S.l,g=S.gaps,docs=S.docs||[];
+  const pri=CFG.primaryColor,acc=CFG.accentColor;
+  const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+
+  // App inventory — fixed column widths sum to 100%
+  const appRows=S.apps.map(a=>
+    '<tr><td style="width:22%"><strong>'+esc(a.name)+'</strong></td>'+
+    '<td style="width:13%">'+esc(a.type)+'</td>'+
+    '<td style="width:9%;text-align:center">'+(a.users||'?')+'</td>'+
+    '<td style="width:17%">'+esc(a.auth)+'</td>'+
+    '<td style="width:14%">'+(a.dept||'&mdash;')+'</td>'+
+    '<td style="width:18%">'+(a.notes||'&mdash;')+'</td>'+
+    '<td style="width:7%;text-align:center">'+(S.critIds.includes(a.id)?'&#9733;':'')+'</td></tr>'
+  ).join('');
+
+  const appSects=(rpt.appAnalyses||[]).map(aa=>
+    '<h2>'+esc(aa.appName)+'</h2>'+
+    '<p>'+iTag(aa.priority)+' &nbsp; <span style="font-size:9.5pt;color:#0891b2">Effort: '+esc(aa.effort)+'</span></p>'+
+    '<h3>Current identity state</h3><p>'+esc(aa.currentState)+'</p>'+
+    '<h3>Authentication &amp; SSO gaps</h3><p>'+esc(aa.authGaps)+'</p>'+
+    '<h3>Access control &amp; role management gaps</h3><p>'+esc(aa.accessGaps)+'</p>'+
+    '<h3>Compliance risk</h3><p>'+esc(aa.complianceRisk)+'</p>'+
+    (aa.docFindings?'<div class="vib"><p style="margin:0"><strong>&#128196; Document findings:</strong> '+esc(aa.docFindings)+'</p></div>':'')+
+    '<h3>'+esc(CFG.companyName)+' modules required</h3>'+
+    '<ul>'+(aa.anugalModules||[]).map(m=>{
+      const mod=getModule(m);
+      return '<li><strong>'+esc(m)+'</strong>'+(mod?' &mdash; '+esc(mod.description):'')+'</li>';
+    }).join('')+'</ul>'+
+    '<h3>Integration &amp; implementation steps</h3>'+
+    '<ol>'+(aa.integrationSteps||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'
+  ).join('');
+
+  const gapRows=(g.gaps||[]).map(x=>
+    '<tr><td style="width:17%"><strong>'+esc(x.area)+'</strong>'+(x.fromDoc?' &#128196;':'')+'</td>'+
+    '<td style="width:19%">'+esc(x.current)+'</td>'+
+    '<td style="width:18%">'+esc(x.gap)+'</td>'+
+    '<td style="width:8%;text-align:center">'+iTag(x.impact)+'</td>'+
+    '<td style="width:17%">'+esc(x.anugalModule)+'</td>'+
+    '<td style="width:21%">'+esc(x.anugalFix)+'</td></tr>'
+  ).join('');
+
+  const prioRows=(rpt.priorityMatrix||[]).map(r=>
+    '<tr><td style="width:28%"><strong>'+esc(r.app)+'</strong></td>'+
+    '<td style="width:44%">'+esc(r.action)+'</td>'+
+    '<td style="width:14%;text-align:center">'+iTag(r.priority)+'</td>'+
+    '<td style="width:14%;text-align:center">'+esc(r.effort)+'</td></tr>'
+  ).join('');
+
+  const docRows=docs.map(d=>
+    '<tr><td style="width:45%">'+esc(d.name)+'</td>'+
+    '<td style="width:22%">'+(d.type==='sop'?'Application SOP':'Architecture Document')+'</td>'+
+    '<td style="width:15%">'+fSize(d.size)+'</td>'+
+    '<td style="width:18%;color:#059669">&#10003; Included</td></tr>'
+  ).join('');
+
+  // Module capabilities table from config
+  const modRows=CFG.modules.slice(0,8).map(m=>
+    '<tr><td style="width:22%;font-weight:600">'+esc(m.name)+'</td>'+
+    '<td style="width:12%"><span style="background:#eff6ff;color:#2563eb;padding:1pt 5pt;font-size:8.5pt">'+esc(m.category)+'</span></td>'+
+    '<td style="width:66%">'+esc(m.description)+'</td></tr>'
+  ).join('');
+
+  const body=
+    // COVER
+    '<table class="cover-table" style="page-break-after:always"><tbody>'+
+    '<tr><td style="padding:50pt 0 20pt;text-align:center">'+logoH(c)+'</td></tr>'+
+    '<tr><td style="text-align:center;padding-bottom:10pt">'+
+    '<div style="display:inline-block;background:'+acc+';color:#fff;padding:5pt 18pt;font-size:10pt;letter-spacing:.06em;margin-bottom:16pt">APPLICATION GAP ANALYSIS REPORT'+(g.isTemplate?' &mdash; TEMPLATE':' &mdash; AI-ENHANCED')+'</div>'+
+    '</td></tr>'+
+    '<tr><td style="text-align:center;padding-bottom:30pt">'+
+    '<h1 style="font-size:24pt;text-align:center">Application Identity<br>Gap Analysis</h1>'+
+    '<p style="font-size:16pt;color:'+acc+';font-weight:400;text-align:center;margin:6pt 0 24pt">'+esc(c.name)+'</p>'+
+    '<div class="tib">'+coverMeta(c,l,'Application Gap Analysis','Product Owners &bull; Application Teams &bull; IT Architects','color:'+acc+';font-weight:700;',g.isTemplate)+'</div>'+
+    '<p style="font-size:8pt;color:#9ca3af;margin-top:14pt">'+esc(CFG.disclaimer)+'</p>'+
+    '</td></tr>'+
+    '</tbody></table>'+
+
+    '<h2>Technical overview</h2>'+
+    '<p>'+esc(rpt.intro||'')+'</p>'+
+
+    (docs.length&&rpt.docSummary?'<h2>&#128196; Uploaded document analysis</h2><div class="vib"><p>'+esc(rpt.docSummary)+'</p></div>':'')+ 
+    (docRows?'<h2>Documents reviewed</h2><table><thead><tr><th>Document name</th><th>Type</th><th>Size</th><th>Status</th></tr></thead><tbody>'+docRows+'</tbody></table>':'')+
+
+    '<h2>Application inventory</h2>'+
+    '<table><thead><tr><th>Application</th><th>Type</th><th>Users</th><th>Auth method</th><th>Dept</th><th>Notes</th><th>&#9733;</th></tr></thead><tbody>'+appRows+'</tbody></table>'+
+
+    appSects+
+
+    '<h2>Cross-application gaps</h2><ul>'+(rpt.crossAppGaps||[]).map(g=>'<li>'+esc(g)+'</li>').join('')+'</ul>'+
+
+    '<h2>Full gap analysis</h2>'+
+    '<table><thead><tr><th>Gap area</th><th>Current state</th><th>Gap identified</th><th>Impact</th><th>'+esc(CFG.companyName)+' module</th><th>Resolution</th></tr></thead><tbody>'+gapRows+'</tbody></table>'+
+    (g.docInsights?'<div class="vib" style="margin-top:8pt"><p style="margin:0"><strong>Document-derived insights:</strong> '+esc(g.docInsights)+'</p></div>':'')+
+
+    '<h2>Implementation priority matrix</h2>'+
+    '<table><thead><tr><th>Application</th><th>Action required</th><th>Priority</th><th>Effort</th></tr></thead><tbody>'+prioRows+'</tbody></table>'+
+
+    '<h2>Technical recommendations</h2><ol>'+(rpt.technicalRecs||[]).map(r=>'<li>'+esc(r)+'</li>').join('')+'</ol>'+
+
+    '<h2>Implementation notes</h2><p>'+esc(rpt.implementationNotes||'')+'</p>'+
+
+    '<h2>Manual processes to automate</h2><ul>'+(g.manualProcesses||[]).map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>'+
+
+    '<h2>Quick wins</h2><ul>'+(g.quickWins||[]).map(w=>'<li>'+esc(w)+'</li>').join('')+'</ul>'+
+
+    '<h2>'+esc(CFG.companyName)+' module capabilities</h2>'+
+    '<table><thead><tr><th>Module</th><th>Category</th><th>Description</th></tr></thead><tbody>'+modRows+'</tbody></table>'+
+
+    footerHtml(c);
+
+  dlDoc(wrapDoc(body,pri,acc),'Anugal_AppGapAnalysis_'+(c.name||'Report').replace(/\s+/g,'_')+'_'+c.date+'.doc');
+}
+
+/* ═══ EXEC DOCUMENT BUILDER ═══ */
+function buildExecDoc(rpt,useTplStyle){
+  const c=S.c,l=S.l,g=S.gaps,docs=S.docs||[];
+  const pri=CFG.primaryColor,acc=CFG.accentColor;
+  const crit=S.apps.filter(a=>S.critIds.includes(a.id));
+
+  const riskRows=(rpt.businessRisks||[]).map(r=>
+    '<tr><td style="width:24%"><strong>'+esc(r.risk)+'</strong></td>'+
+    '<td style="width:38%">'+esc(r.impact)+'</td>'+
+    '<td style="width:13%;text-align:center">'+iTag(r.likelihood)+'</td>'+
+    '<td style="width:25%">'+esc(r.category)+'</td></tr>'
+  ).join('');
+
+  const invRows=(rpt.investmentSummary&&rpt.investmentSummary.phases||[]).map(ph=>
+    '<tr><td style="width:28%"><strong>'+esc(ph.phase)+'</strong></td>'+
+    '<td style="width:28%">'+esc(ph.focus)+'</td>'+
+    '<td style="width:30%">'+esc(ph.value)+'</td>'+
+    '<td style="width:14%;text-align:center">'+esc(ph.investment)+'</td></tr>'
+  ).join('');
+
+  const roadmapTbl=(rpt.strategicRoadmap||[]).map(ph=>
+    '<h3>'+esc(ph.phase)+': '+esc(ph.title)+' <span style="font-size:9.5pt;color:#6b7280">('+esc(ph.duration)+')</span></h3>'+
+    '<table><thead><tr><th style="width:50%">Objectives</th><th style="width:50%">Expected outcomes</th></tr></thead>'+
+    '<tbody><tr>'+
+    '<td><ul>'+(ph.objectives||[]).map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></td>'+
+    '<td><ul>'+(ph.outcomes||[]).map(o=>'<li>'+esc(o)+'</li>').join('')+'</ul></td>'+
+    '</tr></tbody></table>'
+  ).join('');
+
+  const body=
+    // COVER
+    '<table class="cover-table" style="page-break-after:always"><tbody>'+
+    '<tr><td style="padding:50pt 0 20pt;text-align:center">'+logoH(c)+'</td></tr>'+
+    '<tr><td style="text-align:center;padding-bottom:10pt">'+
+    '<div style="display:inline-block;background:'+pri+';color:#fff;padding:5pt 18pt;font-size:10pt;letter-spacing:.06em;margin-bottom:16pt">EXECUTIVE DISCOVERY REPORT &mdash; IDENTITY GOVERNANCE'+(g.isTemplate?' (TEMPLATE)':'')+'</div>'+
+    '</td></tr>'+
+    '<tr><td style="text-align:center;padding-bottom:30pt">'+
+    '<h1 style="font-size:24pt;text-align:center">Identity Governance<br>Executive Assessment</h1>'+
+    '<p style="font-size:16pt;color:#2563eb;font-weight:400;text-align:center;margin:6pt 0 24pt">'+esc(c.name)+'</p>'+
+    '<div class="ib">'+coverMeta(c,l,'Executive Discovery Report','CIO &bull; CFO &bull; Executive Leadership &bull; Board','color:#2563eb;font-weight:700;',g.isTemplate)+'</div>'+
+    '<p style="font-size:8pt;color:#9ca3af;margin-top:14pt">'+esc(CFG.disclaimer)+'</p>'+
+    '</td></tr>'+
+    '</tbody></table>'+
+
+    '<h2>Executive summary</h2>'+
+    '<p style="white-space:pre-wrap">'+esc(rpt.execSummary||'')+'</p>'+
+
+    '<h2>Key findings at a glance</h2>'+
+    '<table><tbody><tr>'+
+    '<td style="width:25%;text-align:center;padding:10pt"><p style="font-size:22pt;font-weight:700;color:'+pri+';margin:0">'+g.gaps.length+'</p><p style="font-size:9.5pt;color:#6b7280;margin:0">Total gaps</p></td>'+
+    '<td style="width:25%;text-align:center;padding:10pt"><p style="font-size:22pt;font-weight:700;color:#b91c1c;margin:0">'+g.gaps.filter(x=>x.impact==='High').length+'</p><p style="font-size:9.5pt;color:#6b7280;margin:0">High impact</p></td>'+
+    '<td style="width:25%;text-align:center;padding:10pt"><p style="font-size:22pt;font-weight:700;color:'+pri+';margin:0">'+S.apps.length+'</p><p style="font-size:9.5pt;color:#6b7280;margin:0">Applications</p></td>'+
+    '<td style="width:25%;text-align:center;padding:10pt"><p style="font-size:22pt;font-weight:700;color:'+pri+';margin:0">'+l.maturity+'/5</p><p style="font-size:9.5pt;color:#6b7280;margin:0">Maturity score</p></td>'+
+    '</tr></tbody></table>'+
+
+    '<h2>Business risk assessment</h2>'+
+    '<table><thead><tr><th>Risk</th><th>Business impact</th><th>Likelihood</th><th>Category</th></tr></thead><tbody>'+riskRows+'</tbody></table>'+
+
+    '<h2>Compliance exposure</h2><p>'+esc(rpt.complianceExposure||'')+'</p>'+
+
+    '<h2>Operational cost of current state</h2><p>'+esc(rpt.operationalCost||'')+'</p>'+
+    '<h3>Critical manual processes</h3><ul>'+(g.manualProcesses||[]).map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul>'+
+    (g.docInsights?'<div class="vib"><p style="margin:0"><strong>&#128196; Document-derived findings:</strong> '+esc(g.docInsights)+'</p></div>':'')+
+
+    '<h2>Return on investment &mdash; '+esc(CFG.companyName)+'</h2><p>'+esc(rpt.roiCase||'')+'</p>'+
+    (invRows?'<h3>Investment summary by phase</h3><table><thead><tr><th>Phase</th><th>Focus area</th><th>Business value</th><th>Investment</th></tr></thead><tbody>'+invRows+'</tbody></table>':'')+
+
+    '<h2>Strategic implementation roadmap</h2>'+roadmapTbl+
+
+    '<h2>90-day quick wins</h2><ul>'+(rpt.quickWins||[]).map(w=>'<li>'+esc(w)+'</li>').join('')+'</ul>'+
+
+    '<h2>Recommended next steps</h2><ol>'+(rpt.nextSteps||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+
+
+    (rpt.closingStatement?'<div class="ib" style="margin-top:16pt"><p style="font-style:italic;font-size:11.5pt;color:'+pri+';margin:0">'+esc(rpt.closingStatement)+'</p></div>':'')+
+
+    '<div style="margin-top:28pt;background:#f8fafc;padding:12pt 14pt;border:0.75pt solid #e2e8f0">'+
+    '<p style="font-weight:700;font-size:11pt;color:'+pri+';margin:0 0 4pt">About '+esc(CFG.companyName)+'</p>'+
+    '<p style="font-size:9.5pt;color:#475569;margin:0">'+esc(CFG.tagline)+'. '+esc(CFG.website)+'</p>'+
+    '</div>'+
+
+    footerHtml(c);
+
+  dlDoc(wrapDoc(body,pri,acc),'Anugal_ExecutiveReport_'+(c.name||'Report').replace(/\s+/g,'_')+'_'+c.date+'.doc');
+}
+
+/* ═══ INIT ═══ */
+loadCFG();
+loadAI();
+updateAIStatus();
+render();
+</script>
+</body>
+</html>
